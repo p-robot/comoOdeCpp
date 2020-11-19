@@ -308,7 +308,6 @@ List covidOdeCpp(
         work_eff = parameters["work_eff"];
         w2h = parameters["w2h"];
         // school closures
-        school_eff = parameters["school_eff"]; // to remove
         s2h = parameters["s2h"];
         // cocooning the elderly
         cocoon_eff = parameters["cocoon_eff"];
