@@ -9,7 +9,7 @@ covidOdeCpp_reset <- function() {
     invisible(.Call(`_comoOdeCpp_covidOdeCpp_reset`))
 }
 
-covidOdeCpp <- function(t, y, parameters, input, A, contact_home, contact_school, contact_work, contact_other, popbirth_col2, popstruc_col2, ageing, ifr_col2, ihr_col2, mort_col) {
-    .Call(`_comoOdeCpp_covidOdeCpp`, t, y, parameters, input, A, contact_home, contact_school, contact_work, contact_other, popbirth_col2, popstruc_col2, ageing, ifr_col2, ihr_col2, mort_col)
+covidOdeCpp <- function(t, y, parameters, input, A, contact_home, contact_school, contact_work, contact_other, popbirth_col2, popstruc_col2, ageing, ifr_col2, ihr_col2, mort_col, age_group_vectors) {
+    .Call(`_comoOdeCpp_covidOdeCpp`, t, y, parameters, input, A, contact_home, contact_school, contact_work, contact_other, popbirth_col2, popstruc_col2, ageing, ifr_col2, ihr_col2, mort_col, age_group_vectors)
 }
 

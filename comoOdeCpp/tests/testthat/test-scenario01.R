@@ -1,6 +1,6 @@
 
 test_that("Splitting intervention", {
-  # skip("temp skip")
+  skip("temp skip")
   rm(list = ls())
   source(paste0(getwd(), "/common.R"), local = environment())
   init(e = environment())
@@ -68,7 +68,7 @@ test_that("Splitting intervention", {
 })
 
 test_that("Matching Rcpp and R version at p={0.00,0.01, ... 0.1}", {
-  # skip("temp skip")
+  skip("temp skip")
 
   rm(list = ls())
   source(paste0(getwd(), "/common.R"), local = environment())

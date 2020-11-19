@@ -1,5 +1,5 @@
 test_that("compare read_intervention_schedule of comoOdeCpp and inputs of como App", {
-    # skip("temp skip")
+    skip("temp skip")
     rm(list = ls())
     source(paste0(getwd(), "/common.R"), local = environment())
     init(e = environment())

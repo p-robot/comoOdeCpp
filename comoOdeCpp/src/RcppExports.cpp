@@ -25,8 +25,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // covidOdeCpp
-List covidOdeCpp(double t, const arma::vec& y, const List& parameters, const List& input, int A, const arma::mat& contact_home, const arma::mat& contact_school, const arma::mat& contact_work, const arma::mat& contact_other, const arma::vec& popbirth_col2, const arma::vec& popstruc_col2, const arma::mat& ageing, const arma::vec& ifr_col2, const arma::vec& ihr_col2, const arma::vec& mort_col);
-RcppExport SEXP _comoOdeCpp_covidOdeCpp(SEXP tSEXP, SEXP ySEXP, SEXP parametersSEXP, SEXP inputSEXP, SEXP ASEXP, SEXP contact_homeSEXP, SEXP contact_schoolSEXP, SEXP contact_workSEXP, SEXP contact_otherSEXP, SEXP popbirth_col2SEXP, SEXP popstruc_col2SEXP, SEXP ageingSEXP, SEXP ifr_col2SEXP, SEXP ihr_col2SEXP, SEXP mort_colSEXP) {
+List covidOdeCpp(double t, const arma::vec& y, const List& parameters, const List& input, int A, const arma::mat& contact_home, const arma::mat& contact_school, const arma::mat& contact_work, const arma::mat& contact_other, const arma::vec& popbirth_col2, const arma::vec& popstruc_col2, const arma::mat& ageing, const arma::vec& ifr_col2, const arma::vec& ihr_col2, const arma::vec& mort_col, const List& age_group_vectors);
+RcppExport SEXP _comoOdeCpp_covidOdeCpp(SEXP tSEXP, SEXP ySEXP, SEXP parametersSEXP, SEXP inputSEXP, SEXP ASEXP, SEXP contact_homeSEXP, SEXP contact_schoolSEXP, SEXP contact_workSEXP, SEXP contact_otherSEXP, SEXP popbirth_col2SEXP, SEXP popstruc_col2SEXP, SEXP ageingSEXP, SEXP ifr_col2SEXP, SEXP ihr_col2SEXP, SEXP mort_colSEXP, SEXP age_group_vectorsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -45,7 +45,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::vec& >::type ifr_col2(ifr_col2SEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type ihr_col2(ihr_col2SEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type mort_col(mort_colSEXP);
-    rcpp_result_gen = Rcpp::wrap(covidOdeCpp(t, y, parameters, input, A, contact_home, contact_school, contact_work, contact_other, popbirth_col2, popstruc_col2, ageing, ifr_col2, ihr_col2, mort_col));
+    Rcpp::traits::input_parameter< const List& >::type age_group_vectors(age_group_vectorsSEXP);
+    rcpp_result_gen = Rcpp::wrap(covidOdeCpp(t, y, parameters, input, A, contact_home, contact_school, contact_work, contact_other, popbirth_col2, popstruc_col2, ageing, ifr_col2, ihr_col2, mort_col, age_group_vectors));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -53,7 +54,7 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_comoOdeCpp_covidOdeCpp_print_timing", (DL_FUNC) &_comoOdeCpp_covidOdeCpp_print_timing, 0},
     {"_comoOdeCpp_covidOdeCpp_reset", (DL_FUNC) &_comoOdeCpp_covidOdeCpp_reset, 0},
-    {"_comoOdeCpp_covidOdeCpp", (DL_FUNC) &_comoOdeCpp_covidOdeCpp, 15},
+    {"_comoOdeCpp_covidOdeCpp", (DL_FUNC) &_comoOdeCpp_covidOdeCpp, 16},
     {NULL, NULL, 0}
 };
 
