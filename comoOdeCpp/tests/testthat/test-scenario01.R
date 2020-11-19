@@ -1,6 +1,6 @@
 
 test_that("Splitting intervention", {
-  # skip("temp skip")
+  skip("temp skip")
   rm(list = ls())
   source(paste0(getwd(), "/common.R"), local = environment())
   init(e = environment())
@@ -74,7 +74,7 @@ test_that("Matching Rcpp and R version at p={0.00,0.01, ... 0.1}", {
   source(paste0(getwd(), "/common.R"), local = environment())
   init(e = environment())
 
-  file_path <- paste0(getwd(), "/data/templates_v16.2/Template_CoMoCOVID-19App_r_v_cpp.xlsx")
+  file_path <- paste0(getwd(), "/data/templates_v16.4/Template_CoMoCOVID-19App_v17_r_v_cpp.xlsx")
 
   if (!exists("inputs", mode = "function")) {
     source(paste0(getwd(), CORE_FILE), local = environment())
@@ -121,7 +121,8 @@ test_that("Matching Rcpp and R version at p={0.00,0.01, ... 0.1}", {
                     ageing = ageing,
                     ifr_col2 = ifr[, 2],
                     ihr_col2 = ihr[, 2],
-                    mort_col = mort
+                    mort_col = mort,
+                    age_group_vectors = age_group_vectors
                     )
       )
       expect_equal(output_message, "covidOdeCpp: splinefuns updated")

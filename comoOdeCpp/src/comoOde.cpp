@@ -103,13 +103,24 @@ void covidOdeCpp_reset() {
 }
 
 // [[Rcpp::export]]
-List covidOdeCpp(double t, const arma::vec& y, const List& parameters,
-             const List& input, int A,
-             const arma::mat& contact_home, const arma::mat& contact_school,
-             const arma::mat& contact_work, const arma::mat& contact_other,
-             const arma::vec& popbirth_col2, const arma::vec& popstruc_col2,
-             const arma::mat& ageing,
-             const arma::vec& ifr_col2, const arma::vec& ihr_col2, const arma::vec& mort_col ){
+List covidOdeCpp(
+            double t,
+            const arma::vec& y,
+            const List& parameters,
+            const List& input,
+            int A,
+            const arma::mat& contact_home,
+            const arma::mat& contact_school,
+            const arma::mat& contact_work,
+            const arma::mat& contact_other,
+            const arma::vec& popbirth_col2,
+            const arma::vec& popstruc_col2,
+            const arma::mat& ageing,
+            const arma::vec& ifr_col2,
+            const arma::vec& ihr_col2,
+            const arma::vec& mort_col,
+            const List& age_group_vectors
+          ) {
     //Rf_PrintValue(parameters);
 
 // auto start_a = high_resolution_clock::now();
@@ -297,7 +308,6 @@ List covidOdeCpp(double t, const arma::vec& y, const List& parameters,
         work_eff = parameters["work_eff"];
         w2h = parameters["w2h"];
         // school closures
-        school_eff = parameters["school_eff"];
         s2h = parameters["s2h"];
         // cocooning the elderly
         cocoon_eff = parameters["cocoon_eff"];
@@ -505,7 +515,7 @@ List covidOdeCpp(double t, const arma::vec& y, const List& parameters,
     // int lockdown_low  = as<NumericVector>(input["lockdown_low"])[my_t];
     // int lockdown_mid  = as<NumericVector>(input["lockdown_mid"])[my_t];
     // int lockdown_high = as<NumericVector>(input["lockdown_high"])[my_t];
-    // int masstesting = as<NumericVector>(input["masstesting"])[my_t];
+    int masstesting = as<NumericVector>(input["masstesting"])[my_t];
     int dexamethasone = as<NumericVector>(input["dex"])[my_t];
 
 
@@ -536,24 +546,31 @@ List covidOdeCpp(double t, const arma::vec& y, const List& parameters,
     double vaccine_cov =     (as<NumericVector>(input["vc_vector"])[my_t])/100.0;
     double quarantine_cov =  (as<NumericVector>(input["q_vector"])[my_t])/100.0;
     double tests_per_day =   (as<NumericVector>(input["mt_vector"])[my_t]);
-    double min_age_testing = floor((as<NumericVector>(input["minas_vector"])[my_t])/5.0 + 1.0);
-    double max_age_testing = floor((as<NumericVector>(input["maxas_vector"])[my_t])/5.0 + 1.0);
-    double min_age_vaccine = floor((as<NumericVector>(input["minav_vector"])[my_t])/5.0 + 1.0);
-    double max_age_vaccine = floor((as<NumericVector>(input["maxav_vector"])[my_t])/5.0 + 1.0);
+    // double min_age_testing = floor((as<NumericVector>(input["minas_vector"])[my_t])/5.0 + 1.0);
+    // double max_age_testing = floor((as<NumericVector>(input["maxas_vector"])[my_t])/5.0 + 1.0);
+    // double min_age_vaccine = floor((as<NumericVector>(input["minav_vector"])[my_t])/5.0 + 1.0);
+    // double max_age_vaccine = floor((as<NumericVector>(input["maxav_vector"])[my_t])/5.0 + 1.0);
+    int vaccineage = as<NumericVector>(input["vaccineage"])[my_t];
+    int testage = as<NumericVector>(input["testage"])[my_t];
 
-    arma::vec age_testing_vector =  arma::join_cols(
-                                          arma::vec(min_age_testing-1, arma::fill::zeros),
-                                          arma::vec(max_age_testing-min_age_testing+1, arma::fill::ones),
-                                          arma::vec(A-max_age_testing, arma::fill::zeros)
-                                      );
+
+
+
+    // arma::vec age_testing_vector =  arma::join_cols(
+    //                                       arma::vec(min_age_testing-1, arma::fill::zeros),
+    //                                       arma::vec(max_age_testing-min_age_testing+1, arma::fill::ones),
+    //                                       arma::vec(A-max_age_testing, arma::fill::zeros)
+    //                                   );
     
     arma::vec age_vaccine_vector =  arma::vec(A, arma::fill::zeros);
-    if(vaccine){
-      age_vaccine_vector =  arma::join_cols(
-                                  arma::vec(min_age_vaccine-1, arma::fill::zeros),
-                                  arma::vec(max_age_vaccine-min_age_vaccine+1, arma::fill::ones),
-                                  arma::vec(A-max_age_vaccine, arma::fill::zeros)
-                              );
+    if (vaccine) {
+      // age_vaccine_vector =  arma::join_cols(
+      //                             arma::vec(min_age_vaccine-1, arma::fill::zeros),
+      //                             arma::vec(max_age_vaccine-min_age_vaccine+1, arma::fill::ones),
+      //                             arma::vec(A-max_age_vaccine, arma::fill::zeros)
+      //                         );
+      age_vaccine_vector = as<arma::vec>(age_group_vectors[vaccineage-1]);
+
              vac_rate = -log(1.0-vaccine_cov)/vac_campaign;
              vaccinate = vac_rate;
       // if (t < 0.1){
@@ -563,6 +580,16 @@ List covidOdeCpp(double t, const arma::vec& y, const List& parameters,
       // }
     }
 
+    arma::vec age_testing_vector =  arma::vec(A, arma::fill::zeros);
+    if (masstesting) {
+      age_testing_vector = as<arma::vec>(age_group_vectors[testage-1]);
+    }
+
+    arma::vec schoolclose2 = arma::vec(A, arma::fill::zeros);
+    if (schoolclose >= 1) {
+      school = school_eff;
+      schoolclose2 = as<arma::vec>(age_group_vectors[schoolclose-1]);
+    }
 
            if (workhome){
              work = work_cov*work_eff;
@@ -573,9 +600,6 @@ List covidOdeCpp(double t, const arma::vec& y, const List& parameters,
                // screen_eff = MIN((report*I + reportc*CL + H+ICU+Vent+ reporth*HC + ICUC+VentC)  *screen_contacts*(screen_overdispersion*I/P)*screen_cov/P,1.0); 
                screen_eff = MIN(sum(report*I + reportc*CL + H+ICU+Vent+ reporth*(HC+ICUC+ICUCV+VentC+HCICU+HCV)) *screen_contacts*(screen_overdispersion*I/P)*screen_test_sens/P,1.0); 
              }
-           }
-           if (schoolclose){
-             school = school_eff;
            }
            if(distancing){
              dist = dist_cov*dist_eff;
@@ -708,9 +732,9 @@ List covidOdeCpp(double t, const arma::vec& y, const List& parameters,
         
         // contact matrices
         arma::mat cts = (contact_home+distancing*(1.0-dist)*contact_other+(1.0-distancing)*contact_other
-               +(1.0-schoolclose)*contact_school //# school on
-               +schoolclose*(1.0-school)*contact_school //# school close
-               +schoolclose*contact_home*school*s2h //# inflating contacts at home when school closes
+               +(1.0-schoolclose2)%contact_school.each_col() //# school on
+               +schoolclose2*(1.0-school)%contact_school.each_col() //# school close
+               +(schoolclose2%contact_home.each_col())*school*s2h //# inflating contacts at home when school closes
                +(1.0-workhome)*contact_work  //# normal work
                +workhome*(1.0-work)*contact_work //# people not working from home when homework is active
                +contact_home*workhome*work*w2h //# inflating contacts at home when working from home
@@ -718,7 +742,7 @@ List covidOdeCpp(double t, const arma::vec& y, const List& parameters,
 
 
         // Final transmission related parameters
-        arma::mat contacts = (1.0-cocoon)*cts+cocoon*cts%cocoon_mat+cocoon*(1.0+schoolclose*(1.0-school_eff)+workhome*(1.0-work_eff))*contact_home%(1.0-cocoon_mat);
+        arma::mat contacts = (1.0-cocoon)*cts+cocoon*cts%cocoon_mat+(cocoon*(1.0+schoolclose2*(1.0-school_eff)+workhome*(1.0-work_eff))%contact_home.each_col())%(1.0-cocoon_mat);
         double seas = 1.0+amp*cos(2.0*3.14*(t-(phi*365.25/12.0))/365.25);
         double importation = mean_imports*(1.0-trvban_eff);
         
