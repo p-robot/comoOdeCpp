@@ -1,4 +1,4 @@
-CORE_FILE <- "/v16.4.core.mod.R"
+CORE_FILE <- "/v16.4.core.mod.16.6.R"
 
 check_libraries <- function() {
   library_list <- list(

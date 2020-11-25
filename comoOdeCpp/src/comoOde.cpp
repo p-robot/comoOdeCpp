@@ -1134,8 +1134,8 @@ List covidOdeCpp(
                         + nu_ventc*dexvc*pdeath_ventc*ifr_col2%ICUCV
                         
                         + nu_ventc*report_death_HC*pdeath_vent_hc*ifr_col2%HCV
-                        + nu_icuc *report_death_HC*propo2      *pdeath_icu_hco*ifr_col2%HCICU
-                        + nu_icuc *report_death_HC*(1.0-propo2)*pdeath_icu_hc *ifr_col2%HCICU // all above are attributable deaths
+                        + nusc *report_death_HC*propo2      *pdeath_icu_hco*ifr_col2%HCICU
+                        + nusc *report_death_HC*(1.0-propo2)*pdeath_icu_hc *ifr_col2%HCICU // all above are attributable deaths
 
                         + mort_col%H
                         + mort_col%ICU

@@ -13,7 +13,7 @@ test_that("Walk-through (v16.4) of the model code", {
     # source(paste0(getwd(), CORE_FILE), local = environment())
     # print("before source")
     # source(paste0(getwd(), "/v16.3.core.R"), local = environment())
-    source(paste0(getwd(), "/v16.4.core.mod.R"), local = environment())
+    source(paste0(getwd(), "/v16.4.core.mod.16.6.R"), local = environment())
     # print("after source")
   }
 
