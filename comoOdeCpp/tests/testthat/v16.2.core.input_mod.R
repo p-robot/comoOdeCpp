@@ -1572,7 +1572,7 @@ critV <- round(critV * to_keep) / to_keep
            nu_icuc*propo2*dexo2c*pdeath_icuco*ifr[,2]*ICUC+nu_icuc*(1-propo2)*pdeath_icuc*ifr[,2]*ICUC+
            nu_vent*dexv*pdeath_vent*ifr[,2]*Vent+nu_ventc*dexvc*pdeath_ventc*ifr[,2]*VentC +
            nu_ventc*dexvc*pdeath_ventc*ifr[,2]*ICUCV+ nu_ventc*report_death_HC*pdeath_vent_hc*ifr[,2]*HCV+
-           nu_icuc*report_death_HC*propo2*pdeath_icu_hco*ifr[,2]*HCICU+nu_icuc*report_death_HC*(1-propo2)*pdeath_icu_hc*ifr[,2]*HCICU +
+           nusc*report_death_HC*propo2*pdeath_icu_hco*ifr[,2]*HCICU+nusc*report_death_HC*(1-propo2)*pdeath_icu_hc*ifr[,2]*HCICU +
            mort*H + mort*ICU + mort*ICUC + mort*ICUCV + mort*Vent + mort*VentC + mort*Z + 
            mort*report_death_HC*HC +mort*report_death_HC*HCICU + mort*report_death_HC*HCV +
            report_natdeathI*mort*I + report_natdeathI*mort*QI+ report_natdeathI*mort*E+
