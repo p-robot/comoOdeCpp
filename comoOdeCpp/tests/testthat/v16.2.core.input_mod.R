@@ -27,7 +27,9 @@
 # setwd("C:/covid19/covid_age")
 # load("data_CoMo.RData")
 # file_path <- paste0(getwd(),"/Template_CoMoCOVID-19App_new.xlsx")  
-country_name<-"United Kingdom of Great Britain"
+if (!exists("country_name") || country_name == "") {
+  country_name<-"United Kingdom of Great Britain"
+}
 # fit_mat <- read.table("fit_mat.txt",header = T)
 
 
@@ -38,6 +40,9 @@ names(dta) <- c("date", "cases", "deaths")
 cases_rv <- dta %>%
   mutate(date = as.Date(date), cumulative_death = cumsum(deaths)) %>%
   as.data.frame()
+
+# print("cases_rv:")
+# print(cases_rv)
 
 # Severity/Mortality
 dta <- read_excel(file_path, sheet = "Severity-Mortality") 

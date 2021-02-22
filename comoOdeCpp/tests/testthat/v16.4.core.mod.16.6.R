@@ -450,6 +450,8 @@ initE<-0*popstruc[,2]  # Incubating
 # initE[aci]<-1          # place random index case in E compartment
 initE[aci]<-parameters["init"]     # place random index case in E compartment
 initR<-parameters["pre"]*popstruc[,2]  # Immune
+# initR<-0*popstruc[,2]  # Immune
+
 initX<-0*popstruc[,2]  # Isolated 
 initV<-0*popstruc[,2]  # Vaccinated 
 initQS<-0*popstruc[,2] # quarantined S 
