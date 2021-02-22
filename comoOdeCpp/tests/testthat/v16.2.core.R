@@ -27,7 +27,9 @@
 # setwd("C:/covid19/covid_age")
 # load("data_CoMo.RData")
 # file_path <- paste0(getwd(),"/Template_CoMoCOVID-19App_new.xlsx")  
-country_name<-"United Kingdom of Great Britain"
+if (!exists("country_name") || country_name == "") {
+  country_name<-"United Kingdom of Great Britain"
+}
 # fit_mat <- read.table("fit_mat.txt",header = T)
 
 

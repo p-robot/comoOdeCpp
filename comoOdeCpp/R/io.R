@@ -1,3 +1,14 @@
+#'
+#' @param intv_vectors
+#' @return updated list of vectors detailing scheuldes of interventions
+#' @export
+# add_intervention_to_schedule <- function(
+#         intv_vectors,
+#         intv_text
+#     ) {
+#     return(intv_vectors)
+# }
+
 #' Read the "Interventions" tab of the template into a list of time-series vectors
 #'
 #' This function is to provide the same functionality of the inputs function that's part of the como App
