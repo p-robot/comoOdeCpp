@@ -86,22 +86,16 @@ match_processed_outputs <- function(
     tlr = 0.0001 # tolerance
   ) {
 
-  testthat::expect_true(is.numeric(output_a$total_cm_deaths_end))
-  testthat::expect_true(is.numeric(output_a$total_reportable_deaths_end))
+  testthat::expect_true(is.numeric(output_a$total_reported_deaths_end))
+  testthat::expect_true(is.numeric(output_b$total_reported_deaths_end))
 
   testthat::expect_equal(
-      output_a$total_cm_deaths_end,
-      output_b$total_cm_deaths_end,
+      output_a$total_reported_deaths_end,
+      output_b$total_reported_deaths_end,
       tolerance = tlr,
-      scale = output_b$total_cm_deaths_end
+      scale = output_b$total_reported_deaths_end
   )
 
-  testthat::expect_equal(
-      output_a$total_reportable_deaths_end,
-      output_b$total_reportable_deaths_end,
-      tolerance = tlr,
-      scale = output_b$total_reportable_deaths_end
-  )
 }
 
 make_spline_funs <- function(
