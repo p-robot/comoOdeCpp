@@ -1,4 +1,4 @@
-CORE_FILE <- "/v16.4.core.mod.16.6.R"
+CORE_FILE <- "/inc/covidage_v16.8.R"
 
 load_libraries <- function() {
   library_list <- list(

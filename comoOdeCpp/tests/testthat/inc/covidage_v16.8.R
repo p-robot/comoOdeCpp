@@ -1,41 +1,48 @@
-require("deSolve")
-library("ggplot2")
-library("dplyr")
-library("reshape2")
-require(gridExtra)
-library(ggpubr)
-library(bsplus)
-library(deSolve)
-library(DT)
-library(highcharter)
-library(lubridate)
-library(pushbar)
-library(readxl)
-library(reshape2)
-library(scales)
-library(shiny)
-library(shinyBS)
-library(shinycssloaders)
-library(shinyhelper)
-library(shinythemes)
-library(shinyWidgets)
-library(tidyverse)
-library(XLConnect)
-library(stringr)
-library(RColorBrewer)
-# library("comoOdeCpp")
+# require("deSolve")
+# library("ggplot2")
+# library("dplyr")
+# library("reshape2")
+# require(gridExtra)
+# library(ggpubr)
+# library(bsplus)
+# library(deSolve)
+# library(DT)
+# library(highcharter)
+# library(lubridate)
+# library(pushbar)
+# library(readxl)
+# library(reshape2)
+# library(scales)
+# library(shiny)
+# library(shinyBS)
+# library(shinycssloaders)
+# library(shinyhelper)
+# library(shinythemes)
+# library(shinyWidgets)
+# library(tidyverse)
+# library(XLConnect)
+# library(stringr)
+# library(RColorBrewer)
+# # library("comoOdeCpp")
 
-#read data from excel file
-setwd("C:/covid19/covid_age")
-load("data_CoMo.RData")
-file_path <- paste0(getwd(),"/Template_CoMoCOVID-19App_v17_all_interventions.xlsx")  
-country_name<-"United Kingdom of Great Britain"
-fit_mat <- read.table("fit_mat.txt",header = T)
+# #read data from excel file
+# setwd("C:/covid19/covid_age")
+# load("data_CoMo.RData")
+# file_path <- paste0(getwd(),"/Template_CoMoCOVID-19App_v17_all_interventions.xlsx")  
+# country_name<-"United Kingdom of Great Britain"
+if (!exists("country_name") || country_name == "") {
+  country_name<-"United Kingdom of Great Britain"
+}
+# fit_mat <- read.table("fit_mat.txt",header = T)
+fit_mat <- read.table("data/fit_mat.txt",header = T)
 
 
 # Cases
-dta <- read_excel(file_path, sheet = "Cases")
-names(dta) <- c("date", "cases", "deaths","rep_cases","rep_deaths")
+# dta <- read_excel(file_path, sheet = "Cases")
+# names(dta) <- c("date", "cases", "deaths","rep_cases","rep_deaths")
+
+dta <- read_excel(file_path, sheet = "Epidemiology")
+names(dta) <- c("date", "cases", "deaths", "unknown")
 
 cases_rv <- dta %>%
   mutate(date = as.Date(date), cumulative_death = cumsum(deaths)) %>%
@@ -254,7 +261,7 @@ parameters <- c(
   work_eff = mean(param$Value[param$Parameter=="work_eff"],na.rm=T),
   w2h = mean(param$Value[param$Parameter=="w2h"],na.rm=T),
   # school closures
-  school_eff = mean(param$Value[param$Parameter=="school_eff"],na.rm=T),
+  # school_eff = mean(param$Value[param$Parameter=="school_eff"],na.rm=T),
   s2h = mean(param$Value[param$Parameter=="s2h"],na.rm=T),
   # cocooning the elderly
   cocoon_eff = mean(param$Value[param$Parameter=="cocoon_eff"],na.rm=T),
@@ -263,8 +270,8 @@ parameters <- c(
   # vaccine_on = as.numeric(param$Value_Date[param$Parameter=="date_vaccine_on"] - startdate),
   vaccine_eff = mean(param$Value[param$Parameter=="vaccine_eff"],na.rm=T),
   vaccine_eff_r = mean(param$Value[param$Parameter=="vaccine_eff_r"],na.rm=T),
-  age_vaccine_min = mean(param$Value[param$Parameter=="age_vaccine_min"],na.rm=T),
-  age_vaccine_max = mean(param$Value[param$Parameter=="age_vaccine_max"],na.rm=T),
+  # age_vaccine_min = mean(param$Value[param$Parameter=="age_vaccine_min"],na.rm=T),
+  # age_vaccine_max = mean(param$Value[param$Parameter=="age_vaccine_max"],na.rm=T),
   # vaccine_cov = param$Value[param$Parameter=="vaccine_cov"],
   vac_campaign = mean(param$Value[param$Parameter=="vac_campaign"],na.rm=T),
   # travel ban
@@ -279,8 +286,8 @@ parameters <- c(
   quarantine_eff_home = mean(param$Value[param$Parameter=="quarantine_eff_home"],na.rm=T),
   quarantine_eff_other = mean(param$Value[param$Parameter=="quarantine_eff_other"],na.rm=T),
   # mass testing
-  age_testing_min = mean(param$Value[param$Parameter=="age_testing_min"],na.rm=T),
-  age_testing_max = mean(param$Value[param$Parameter=="age_testing_max"],na.rm=T),
+  # age_testing_min = mean(param$Value[param$Parameter=="age_testing_min"],na.rm=T),
+  # age_testing_max = mean(param$Value[param$Parameter=="age_testing_max"],na.rm=T),
   mass_test_sens = mean(param$Value[param$Parameter=="mass_test_sens"],na.rm=T),
   isolation_days = mean(param$Value[param$Parameter=="isolation_days"],na.rm=T),
   
@@ -322,14 +329,14 @@ parameters["hand_eff"]<-parameters["hand_eff"]/100
 parameters["mask_eff"]<-parameters["mask_eff"]/100
 parameters["work_eff"]<-parameters["work_eff"]/100
 parameters["w2h"]<-parameters["w2h"]/100
-parameters["school_eff"]<-parameters["school_eff"]/100
+# parameters["school_eff"]<-parameters["school_eff"]/100
 parameters["s2h"]<-parameters["s2h"]/100
 parameters["cocoon_eff"]<-parameters["cocoon_eff"]/100
 parameters["age_cocoon"]<-floor((parameters["age_cocoon"]/5)+1)
 parameters["vaccine_eff"]<-parameters["vaccine_eff"]/100
 parameters["vaccine_eff_r"]<-parameters["vaccine_eff_r"]/100
-age_vaccine_min<-(parameters["age_vaccine_min"])
-age_vaccine_max<-(parameters["age_vaccine_max"])
+# age_vaccine_min<-(parameters["age_vaccine_min"])
+# age_vaccine_max<-(parameters["age_vaccine_max"])
 # parameters["vaccine_cov"]<-parameters["vaccine_cov"]/100
 # parameters["vac_campaign"]<-parameters["vac_campaign"]*7
 parameters["screen_test_sens"]<-parameters["screen_test_sens"]/100
@@ -360,8 +367,8 @@ iterations<-parameters["iterations"]
 noise<-parameters["noise"]
 confidence<-parameters["confidence"]/100
 parameters["mass_test_sens"]<-parameters["mass_test_sens"]/100
-age_testing_min<-(parameters["age_testing_min"])
-age_testing_max<-(parameters["age_testing_max"])
+# age_testing_min<-(parameters["age_testing_min"])
+# age_testing_max<-(parameters["age_testing_max"])
 parameters["isolation_days"]<-parameters["isolation_days"]
 parameters["propo2"]<-parameters["propo2"]/100
 parameters["dexo2"]<-parameters["dexo2"]/100
@@ -489,7 +496,9 @@ inp <- read_excel(file_path, sheet = "Interventions") %>%
   filter(! is.na(Intervention))
 # Test if listed interventions are valid
 valid_interventions_v17 <- c("Dexamethasone", "Handwashing", "International Travel Ban",
-                             "Mask Wearing", "Mass Testing", "School Closures", "Self-isolation if Symptomatic",
+                             "Mask Wearing", "Mass Testing", "School Closures",
+                             "Partial School Closures",
+                             "Self-isolation if Symptomatic",
                              "(*Self-isolation) Household Isolation", "(*Self-isolation) Screening", "Shielding the Elderly",
                              "Social Distancing", "Vaccination", "Working at Home")
 if(all(inp$Intervention %in% valid_interventions_v17)) message("Okay, all interventions are valid.")
@@ -526,8 +535,13 @@ for (i in 1:length(vec)){
 
 inputs<-function(inp, run){
   # cap intervention start and end dates with simulation end date
-  inp$`Date Start` = pmin(stopdate, inp$`Date Start`)
-  inp$`Date End` = pmin(stopdate, inp$`Date End`)
+
+  inp[["Date Start"]] = pmin(stopdate, as.Date(inp[["Date Start"]]))
+  inp[["Date End"]] = pmin(stopdate, as.Date(inp[["Date End"]]))
+
+  inp[["Date Start"]] = pmax(startdate, as.Date(inp[["Date Start"]]))
+  inp[["Date End"]] = pmax(startdate, as.Date(inp[["Date End"]]))
+
   inp <- inp %>% arrange(`Date Start`)
   # print(inp)
   tv<-which(inp$`Apply to`==run)
@@ -1229,6 +1243,11 @@ covid<-function(t, Y, parameters,input)
          critH<-min(1-fH(sum(H)+sum(ICUC)+sum(ICUCV)),1)
          crit<-min(1-fICU(sum(ICU)+sum(Vent)+sum(VentC)),1)
          critV<-min(1-fVent(sum(Vent)),1)
+
+to_keep = 10000000
+critH <- round(critH * to_keep) / to_keep
+crit  <- round(crit  * to_keep) / to_keep
+critV <- round(critV * to_keep) / to_keep
          
          # interventions
          isolation<-input$isolation[t*20+1]
@@ -1435,7 +1454,7 @@ covid<-function(t, Y, parameters,input)
                +workhome*(1-work)*contact_work # people not working from home when homework is active
                +contact_home*workhome*work*w2h # inflating contacts at home when working from home
          )
-         print(sum(rowSums(cts)))
+         # print(sum(rowSums(cts)))
          
          # print(paste("time",t,"  cts: ",length(cts)))
          # Final transmission related parameters
@@ -1671,8 +1690,8 @@ covid<-function(t, Y, parameters,input)
 Y<-c(initS,initE,initI,initR,initX,initH,initHC,initC,initCM,initV, initQS, initQE, initQI, initQR, initCL, initQC, initICU, 
      initICUC, initICUCV, initVent, initVentC, initCMC,initZ, initEV, initER, initEVR, initVR, 
      initQV,initQEV,initQEVR,initQER,initQVR,initHCICU,initHCV,initAb) # initial conditions for the main solution vector
-out0 <- ode(y = Y, times = times, method = "euler", hini = 0.05, func = covid, parms = parameters, input=vectors0)
-tail(rowSums(out0[,(CMindex+1)]),1)                       # cumulative mortality
+# out0 <- ode(y = Y, times = times, method = "euler", hini = 0.05, func = covid, parms = parameters, input=vectors0)
+# tail(rowSums(out0[,(CMindex+1)]),1)                       # cumulative mortality
 # tail(rowSums(out0[,(Sindex+1)]),1)/sum(popstruc[,2])      # cumulative mortality
 # tail(rowSums(out0[,(Vindex+1)]),1)/sum(popstruc[,2])      # cumulative mortality
 # tail(rowSums(out0[,(Rindex+1)]),1)/sum(popstruc[,2])      # cumulative mortality
@@ -1744,11 +1763,17 @@ tail(rowSums(out0[,(CMindex+1)]),1)                       # cumulative mortality
 # ################################################################################################
 
 
-process_ode_outcome <- function(out, iterations,intv_vector){
-  out_min<-out$min
-  out_max<-out$max
-  out_mean<-out$mean
+# process_ode_outcome <- function(out, iterations,intv_vector){
+#   out_min<-out$min
+#   out_max<-out$max
+#   out_mean<-out$mean
   
+process_ode_outcome <- function(out_mean, intv_vector, param_used, iterations = 1){
+  out_min<-out_mean
+  out_max<-out_mean
+  # out_mean<-out$mean
+  parameters <- param_used
+
   critH<-c()
   crit<-c()
   critV<-c()
@@ -1905,12 +1930,12 @@ process_ode_outcome <- function(out, iterations,intv_vector){
   results$ab<-ab_age
   
   # Rt/ FOI
-  dailyinc1<-out$mean_cases         # daily incidence
-  results$Rt <- out$mean_Rt
-  results$pct_total_pop_infected <- out$mean_infections
-  results$doubling_time <- round(log(2)*7 / (log(dailyinc1[2+7] / dailyinc1[2])), 2)  # (Baseline only) to double the number of infections at inception
-  results$daily_incidence <- round(dailyinc1)  # daily incidence (Reported)
-  results$daily_total_cases <- round(out$mean_daily_infection) # daily incidence (Reported + Unreported)  # daily incidence (Reported + Unreported)
+  # dailyinc1<-out$mean_cases         # daily incidence
+  # results$Rt <- out$mean_Rt
+  # results$pct_total_pop_infected <- out$mean_infections
+  # results$doubling_time <- round(log(2)*7 / (log(dailyinc1[2+7] / dailyinc1[2])), 2)  # (Baseline only) to double the number of infections at inception
+  # results$daily_incidence <- round(dailyinc1)  # daily incidence (Reported)
+  # results$daily_total_cases <- round(out$mean_daily_infection) # daily incidence (Reported + Unreported)  # daily incidence (Reported + Unreported)
   
   # Hospital requirements
   previcureq1<-rowSums(out_mean[,(Hindex+1)])+ rowSums(out_mean[,(ICUCindex+1)])+rowSums(out_mean[,(ICUCVindex+1)]) # surge beds occupancy
@@ -1956,90 +1981,90 @@ process_ode_outcome <- function(out, iterations,intv_vector){
   
   
   ## AGE DEPENDENT MORTALITY
-  cinc_mort_H1 <- parameters["nus"]*parameters["propo2"]*parameters["pdeath_ho"]*dexo2_hist*(out$mean[,(Hindex+1)])+
-    parameters["nus"]*(1-parameters["propo2"])*parameters["pdeath_h"]*(out$mean[,(Hindex+1)])
-  cinc_mort_HC1 <- parameters["nusc"]*parameters["report_death_HC"]*parameters["propo2"]*parameters["pdeath_hco"]*(out$mean[,(HCindex+1)])+
-    parameters["nusc"]*parameters["report_death_HC"]*(1-parameters["propo2"])*parameters["pdeath_hc"]*(out$mean[,(HCindex+1)])
-  cinc_mort_ICU1 <- parameters["nu_icu"]*parameters["propo2"]*parameters["pdeath_icuo"]*dexo2_hist*(out$mean[,(ICUindex+1)])+
-    parameters["nu_icu"]*(1-parameters["propo2"])*parameters["pdeath_icu"]*(out$mean[,(ICUindex+1)])
-  cinc_mort_ICUC1 <- parameters["nu_icuc"]*parameters["propo2"]*parameters["pdeath_icuco"]*dexo2c_hist*(out$mean[,(ICUCindex+1)] )+
-    parameters["nu_icuc"]*(1-parameters["propo2"])*parameters["pdeath_icuc"]*(out$mean[,(ICUCindex+1)] )
-  cinc_mort_Vent1  <- parameters["nu_vent"]*parameters["pdeath_vent"]*dexv_hist*(out$mean[,(Ventindex+1)] )
-  cinc_mort_VentC1 <- parameters["nu_ventc"]*parameters["pdeath_ventc"]*dexvc_hist*(out$mean[,(VentCindex+1)] )
-  cinc_mort_ICUCV1 <- parameters["nu_ventc"]*parameters["pdeath_ventc"]*dexvc_hist*(out$mean[,(ICUCVindex+1)] )
-  cinc_mort_HCICU1 <- parameters["nusc"]*parameters["report_death_HC"]*parameters["propo2"]*parameters["pdeath_icu_hco"]*(out$mean[,(HCICUindex+1)] )+
-    parameters["nusc"]*parameters["report_death_HC"]*(1-parameters["propo2"])*parameters["pdeath_icu_hc"]*(out$mean[,(HCICUindex+1)] )
-  cinc_mort_HCV1 <- parameters["nu_ventc"]*parameters["report_death_HC"]*parameters["pdeath_vent_hc"]*(out$mean[,(HCVindex+1)] )
+  # cinc_mort_H1 <- parameters["nus"]*parameters["propo2"]*parameters["pdeath_ho"]*dexo2_hist*(out$mean[,(Hindex+1)])+
+  #   parameters["nus"]*(1-parameters["propo2"])*parameters["pdeath_h"]*(out$mean[,(Hindex+1)])
+  # cinc_mort_HC1 <- parameters["nusc"]*parameters["report_death_HC"]*parameters["propo2"]*parameters["pdeath_hco"]*(out$mean[,(HCindex+1)])+
+  #   parameters["nusc"]*parameters["report_death_HC"]*(1-parameters["propo2"])*parameters["pdeath_hc"]*(out$mean[,(HCindex+1)])
+  # cinc_mort_ICU1 <- parameters["nu_icu"]*parameters["propo2"]*parameters["pdeath_icuo"]*dexo2_hist*(out$mean[,(ICUindex+1)])+
+  #   parameters["nu_icu"]*(1-parameters["propo2"])*parameters["pdeath_icu"]*(out$mean[,(ICUindex+1)])
+  # cinc_mort_ICUC1 <- parameters["nu_icuc"]*parameters["propo2"]*parameters["pdeath_icuco"]*dexo2c_hist*(out$mean[,(ICUCindex+1)] )+
+  #   parameters["nu_icuc"]*(1-parameters["propo2"])*parameters["pdeath_icuc"]*(out$mean[,(ICUCindex+1)] )
+  # cinc_mort_Vent1  <- parameters["nu_vent"]*parameters["pdeath_vent"]*dexv_hist*(out$mean[,(Ventindex+1)] )
+  # cinc_mort_VentC1 <- parameters["nu_ventc"]*parameters["pdeath_ventc"]*dexvc_hist*(out$mean[,(VentCindex+1)] )
+  # cinc_mort_ICUCV1 <- parameters["nu_ventc"]*parameters["pdeath_ventc"]*dexvc_hist*(out$mean[,(ICUCVindex+1)] )
+  # cinc_mort_HCICU1 <- parameters["nusc"]*parameters["report_death_HC"]*parameters["propo2"]*parameters["pdeath_icu_hco"]*(out$mean[,(HCICUindex+1)] )+
+  #   parameters["nusc"]*parameters["report_death_HC"]*(1-parameters["propo2"])*parameters["pdeath_icu_hc"]*(out$mean[,(HCICUindex+1)] )
+  # cinc_mort_HCV1 <- parameters["nu_ventc"]*parameters["report_death_HC"]*parameters["pdeath_vent_hc"]*(out$mean[,(HCVindex+1)] )
   
-  totage1<-as.data.frame(cinc_mort_H1+cinc_mort_HC1+cinc_mort_ICU1+cinc_mort_ICUC1+
-                           cinc_mort_Vent1+cinc_mort_VentC1+cinc_mort_ICUCV1+cinc_mort_HCICU1+cinc_mort_HCV1)
+  # totage1<-as.data.frame(cinc_mort_H1+cinc_mort_HC1+cinc_mort_ICU1+cinc_mort_ICUC1+
+  #                          cinc_mort_Vent1+cinc_mort_VentC1+cinc_mort_ICUCV1+cinc_mort_HCICU1+cinc_mort_HCV1)
   
-  basemort_H1<-(out$mean[,(Hindex+1)])
-  basemort_HC1<-parameters["report_death_HC"]*(out$mean[,(HCindex+1)])
-  basemort_ICU1<-(out$mean[,(ICUindex+1)])
-  basemort_ICUC1<-(out$mean[,(ICUCindex+1)])
-  basemort_ICUCV1<-(out$mean[,(ICUCVindex+1)])
-  basemort_Vent1<-(out$mean[,(Ventindex+1)])
-  basemort_VentC1<-(out$mean[,(VentCindex+1)])
-  basemort_HCICU1<-parameters["report_death_HC"]*(out$mean[,(HCICUindex+1)])
-  basemort_HCV1<-parameters["report_death_HC"]*(out$mean[,(HCVindex+1)])
-  basemort_I<-parameters["report_natdeathI"]*(out$mean[,(Iindex+1)])
-  basemort_QI<-parameters["report_natdeathI"]*(out$mean[,(QIindex+1)])
-  basemort_E<-parameters["report_natdeathI"]*(out$mean[,(Eindex+1)])
-  basemort_QE<-parameters["report_natdeathI"]*(out$mean[,(QEindex+1)])
-  basemort_EV<-parameters["report_natdeathI"]*(out$mean[,(EVindex+1)])
-  basemort_EVR<-parameters["report_natdeathI"]*(out$mean[,(EVRindex+1)])
-  basemort_ER<-parameters["report_natdeathI"]*(out$mean[,(ERindex+1)])
-  basemort_QEV<-parameters["report_natdeathI"]*(out$mean[,(QEVindex+1)])
-  basemort_QEVR<-parameters["report_natdeathI"]*(out$mean[,(QEVRindex+1)])
-  basemort_QER<-parameters["report_natdeathI"]*(out$mean[,(QERindex+1)])
-  basemort_CL<-parameters["report_natdeathCL"]*(out$mean[,(CLindex+1)])
-  basemort_QC<-parameters["report_natdeathCL"]*(out$mean[,(QCindex+1)])
-  basemort_X<-parameters["report_natdeathCL"]*(out$mean[,(Xindex+1)])
+  # basemort_H1<-(out$mean[,(Hindex+1)])
+  # basemort_HC1<-parameters["report_death_HC"]*(out$mean[,(HCindex+1)])
+  # basemort_ICU1<-(out$mean[,(ICUindex+1)])
+  # basemort_ICUC1<-(out$mean[,(ICUCindex+1)])
+  # basemort_ICUCV1<-(out$mean[,(ICUCVindex+1)])
+  # basemort_Vent1<-(out$mean[,(Ventindex+1)])
+  # basemort_VentC1<-(out$mean[,(VentCindex+1)])
+  # basemort_HCICU1<-parameters["report_death_HC"]*(out$mean[,(HCICUindex+1)])
+  # basemort_HCV1<-parameters["report_death_HC"]*(out$mean[,(HCVindex+1)])
+  # basemort_I<-parameters["report_natdeathI"]*(out$mean[,(Iindex+1)])
+  # basemort_QI<-parameters["report_natdeathI"]*(out$mean[,(QIindex+1)])
+  # basemort_E<-parameters["report_natdeathI"]*(out$mean[,(Eindex+1)])
+  # basemort_QE<-parameters["report_natdeathI"]*(out$mean[,(QEindex+1)])
+  # basemort_EV<-parameters["report_natdeathI"]*(out$mean[,(EVindex+1)])
+  # basemort_EVR<-parameters["report_natdeathI"]*(out$mean[,(EVRindex+1)])
+  # basemort_ER<-parameters["report_natdeathI"]*(out$mean[,(ERindex+1)])
+  # basemort_QEV<-parameters["report_natdeathI"]*(out$mean[,(QEVindex+1)])
+  # basemort_QEVR<-parameters["report_natdeathI"]*(out$mean[,(QEVRindex+1)])
+  # basemort_QER<-parameters["report_natdeathI"]*(out$mean[,(QERindex+1)])
+  # basemort_CL<-parameters["report_natdeathCL"]*(out$mean[,(CLindex+1)])
+  # basemort_QC<-parameters["report_natdeathCL"]*(out$mean[,(QCindex+1)])
+  # basemort_X<-parameters["report_natdeathCL"]*(out$mean[,(Xindex+1)])
   
-  totbase1<-as.data.frame(basemort_H1+basemort_HC1+basemort_ICU1+basemort_ICUC1+basemort_ICUCV1+
-                            basemort_Vent1+basemort_VentC1+basemort_HCICU1+basemort_HCV1+ 
-                            basemort_I+basemort_QI+basemort_E+basemort_QE+basemort_EV+basemort_EVR+
-                            basemort_ER+basemort_QEV+basemort_QEVR+basemort_QER+basemort_CL+basemort_QC+basemort_X)
+  # totbase1<-as.data.frame(basemort_H1+basemort_HC1+basemort_ICU1+basemort_ICUC1+basemort_ICUCV1+
+  #                           basemort_Vent1+basemort_VentC1+basemort_HCICU1+basemort_HCV1+ 
+  #                           basemort_I+basemort_QI+basemort_E+basemort_QE+basemort_EV+basemort_EVR+
+  #                           basemort_ER+basemort_QEV+basemort_QEVR+basemort_QER+basemort_CL+basemort_QC+basemort_X)
   
-  tc<-c()
-  for (i in 1:dim(cinc_mort_H1)[1]) {
-    for (j in 1:dim(cinc_mort_H1)[2]) {
-      # print(totage1[i,j]*ifr[j,2]+totbase1[i,j]*mort[j])
-      tc<-rbind(tc,c(i, j, totage1[i,j]*ifr[j,2]+totbase1[i,j]*mort[j]))
-    }
-  }
-  tc<-as.data.frame(tc)
-  colnames(tc)<-c("Day","Age","value")
+  # tc<-c()
+  # for (i in 1:dim(cinc_mort_H1)[1]) {
+  #   for (j in 1:dim(cinc_mort_H1)[2]) {
+  #     # print(totage1[i,j]*ifr[j,2]+totbase1[i,j]*mort[j])
+  #     tc<-rbind(tc,c(i, j, totage1[i,j]*ifr[j,2]+totbase1[i,j]*mort[j]))
+  #   }
+  # }
+  # tc<-as.data.frame(tc)
+  # colnames(tc)<-c("Day","Age","value")
 
-  results$tc <- tc %>%
-    mutate(Date = startdate + Day,
-           age_cat = case_when(
-             Age >=  1 & Age <= 6   ~ "<= 30 y.o.",
-             Age >  6 & Age <= 8    ~ "30-40 y.o.",
-             Age >  8 & Age <= 10    ~ "40-50 y.o.",
-             Age >  10 & Age <= 12    ~ "50-60 y.o.",
-             Age >  12 & Age <= 14    ~ "60-70 y.o.",
-             Age >=  15  ~ ">= 70 y.o.")) %>%
-    mutate(age_cat = factor(age_cat, levels = rev(c("<= 30 y.o.", "30-40 y.o.",
-                                                    "40-50 y.o.", "50-60 y.o.", "60-70 y.o.", ">= 70 y.o."))))
+  # results$tc <- tc %>%
+  #   mutate(Date = startdate + Day,
+  #          age_cat = case_when(
+  #            Age >=  1 & Age <= 6   ~ "<= 30 y.o.",
+  #            Age >  6 & Age <= 8    ~ "30-40 y.o.",
+  #            Age >  8 & Age <= 10    ~ "40-50 y.o.",
+  #            Age >  10 & Age <= 12    ~ "50-60 y.o.",
+  #            Age >  12 & Age <= 14    ~ "60-70 y.o.",
+  #            Age >=  15  ~ ">= 70 y.o.")) %>%
+  #   mutate(age_cat = factor(age_cat, levels = rev(c("<= 30 y.o.", "30-40 y.o.",
+  #                                                   "40-50 y.o.", "50-60 y.o.", "60-70 y.o.", ">= 70 y.o."))))
   
 
-  mortality_lag <- data.frame(Age = popstruc$agefloor)
-  if(nrow(out_mean) >= 30)  mortality_lag <- bind_cols(mortality_lag,
-                                                       data.frame(day30 = out_mean[30,CMindex+1]/out_mean[30,Cindex+1]) %>%
-                                                         mutate(day30 = ifelse(is.infinite(day30), 0, day30)))
-  if(nrow(out_mean) >= 60)  mortality_lag <- bind_cols(mortality_lag,
-                                                       data.frame(day60 = out_mean[60,CMindex+1]/out_mean[60,Cindex+1]) %>%
-                                                         mutate(day60 = ifelse(is.infinite(day60), 0, day60)))
-  if(nrow(out_mean) >= 90)  mortality_lag <- bind_cols(mortality_lag,
-                                                       data.frame(day90 = out_mean[90,CMindex+1]/out_mean[90,Cindex+1]) %>%
-                                                         mutate(day90 = ifelse(is.infinite(day90), 0, day90))) 
-  if(nrow(out_mean) >= 120)  mortality_lag <- bind_cols(mortality_lag,
-                                                        data.frame(day120 = out_mean[120,CMindex+1]/out_mean[120,Cindex+1]) %>%
-                                                          mutate(day120 = ifelse(is.infinite(day120), 0, day120)))
+  # mortality_lag <- data.frame(Age = popstruc$agefloor)
+  # if(nrow(out_mean) >= 30)  mortality_lag <- bind_cols(mortality_lag,
+  #                                                      data.frame(day30 = out_mean[30,CMindex+1]/out_mean[30,Cindex+1]) %>%
+  #                                                        mutate(day30 = ifelse(is.infinite(day30), 0, day30)))
+  # if(nrow(out_mean) >= 60)  mortality_lag <- bind_cols(mortality_lag,
+  #                                                      data.frame(day60 = out_mean[60,CMindex+1]/out_mean[60,Cindex+1]) %>%
+  #                                                        mutate(day60 = ifelse(is.infinite(day60), 0, day60)))
+  # if(nrow(out_mean) >= 90)  mortality_lag <- bind_cols(mortality_lag,
+  #                                                      data.frame(day90 = out_mean[90,CMindex+1]/out_mean[90,Cindex+1]) %>%
+  #                                                        mutate(day90 = ifelse(is.infinite(day90), 0, day90))) 
+  # if(nrow(out_mean) >= 120)  mortality_lag <- bind_cols(mortality_lag,
+  #                                                       data.frame(day120 = out_mean[120,CMindex+1]/out_mean[120,Cindex+1]) %>%
+  #                                                         mutate(day120 = ifelse(is.infinite(day120), 0, day120)))
 
-  results$mortality_lag <- mortality_lag
+  # results$mortality_lag <- mortality_lag
 
   
   if(iterations>1){
@@ -2343,296 +2368,296 @@ multi_runs<-function(Y,times,parameters,input,iterations,noise,confidence,fit,fi
   }
   return(results)
 }
-out0<-multi_runs(Y, times, parameters, vectors0, iterations, noise, confidence,0,fit_mat)
-out0$min_infections
-out0$max_infections
+# out0<-multi_runs(Y, times, parameters, vectors0, iterations, noise, confidence,0,fit_mat)
+# out0$min_infections
+# out0$max_infections
 
-plot(times,rowSums(out0$mean[,Iindex+1]),type = 'l')
-polygon(c(times, rev(times)), c(rowSums(out0$max[,Iindex+1]), rev(rowSums(out0$min[,Iindex+1]))),
-        col=rgb(0, 0, 0,0.25), border = NA)
+# plot(times,rowSums(out0$mean[,Iindex+1]),type = 'l')
+# polygon(c(times, rev(times)), c(rowSums(out0$max[,Iindex+1]), rev(rowSums(out0$min[,Iindex+1]))),
+#         col=rgb(0, 0, 0,0.25), border = NA)
 
-plot(times,out0$mean_Rt,type = 'l')
-polygon(c(times, rev(times)), c(out0$max_Rt, rev(out0$min_Rt)),
-        col=rgb(0, 0, 0,0.25), border = NA)
+# plot(times,out0$mean_Rt,type = 'l')
+# polygon(c(times, rev(times)), c(out0$max_Rt, rev(out0$min_Rt)),
+#         col=rgb(0, 0, 0,0.25), border = NA)
 
-simul_baseline <- process_ode_outcome(out0,iterations,vectors0)
-# # write.csv(simul_baseline, paste0(hilo,"_baseline_",gsub(":|-","",Sys.time()),".csv"))
-# 
-#future interventions
-#extend travel ban, quarantine, hand washing, cocooning the elderly until 1st July
-out <-multi_runs(Y, times, parameters, vectors, iterations, noise, confidence,0,fit_mat)
-simul_interventions <- process_ode_outcome(out,iterations,vectors)
-# write.csv(simul_interventions, paste0(hilo,"_futureIntv_",gsub(":|-","",Sys.time()),".csv"))
-
-
-#############    PLOTTING
-# Fitting tab
-# fitting the intervention lines to the data to account for any historical interventions
-time<-as.Date(out0$mean[,1]+startdate)
-par(mfrow=c(1,2))
-# set up the axis limits
-xmin<-min(as.Date(cases_rv[,1]))
-xmax<-max(as.Date(cases_rv[,1]))
-ymax<-max(cases_rv[,2],na.rm = T)
-xtick<-seq(xmin, xmax, by=7)
-plot(time,rowSums(simul_interventions$daily_incidence),type='l',lwd=3,
-     main="New Reported Cases", xlab="Date", ylab="Cases per day",
-     xlim=c(xmin,xmax),  ylim=c(0,ymax), col='blue',xaxt="n")
-axis(side=1, labels = FALSE)
-text(x=xtick,  y=-250, labels = format(xtick,"%b-%d"), srt = 0, xpd = TRUE)
-points(as.Date(cases_rv[,1]),cases_rv[,2],pch=19,col='red')
-
-# reset the maximum to the cumulative mortality
-ymax<-max(cases_rv[,3],na.rm = T)
-plot(time,simul_interventions$cum_mortality,type='l',lwd=3,
-     main="Cumulative Mortality", xlab="Date", ylab="Total deaths",
-     xlim=c(xmin,xmax), ylim=c(0,ymax), col='blue',xaxt="n")
-text(x=xtick,  y=-100, labels = format(xtick,"%b-%d"), srt = 0, xpd = TRUE)
-points(as.Date(cases_rv[,1]),cases_rv[,3],pch=19,col='red')
+# simul_baseline <- process_ode_outcome(out0,iterations,vectors0)
+# # # write.csv(simul_baseline, paste0(hilo,"_baseline_",gsub(":|-","",Sys.time()),".csv"))
+# # 
+# #future interventions
+# #extend travel ban, quarantine, hand washing, cocooning the elderly until 1st July
+# out <-multi_runs(Y, times, parameters, vectors, iterations, noise, confidence,0,fit_mat)
+# simul_interventions <- process_ode_outcome(out,iterations,vectors)
+# # write.csv(simul_interventions, paste0(hilo,"_futureIntv_",gsub(":|-","",Sys.time()),".csv"))
 
 
-### Predictions tab
-par(mfrow=c(1,2))
-### Cases at baseline and intervention
-ymax<-max(c(cases_rv[,2],rowSums(simul_baseline$daily_incidence),rowSums(simul_interventions$daily_incidence)),na.rm=T)
-plot(time,rowSums(simul_baseline$daily_incidence),type='l',lwd=3,col='blue',
-     main="Baseline", xlab="Date", ylab="New cases per day",ylim=c(0,ymax))
-points(as.Date(cases_rv[,1]),cases_rv[,2],pch=19,col='red')
-plot(time,rowSums(simul_interventions$daily_incidence),type='l',lwd=3,col='blue',
-     main="Intervention", xlab="Date", ylab="New cases per day",ylim=c(0,ymax))
-points(as.Date(cases_rv[,1]),cases_rv[,2],pch=19,col='red')
+# #############    PLOTTING
+# # Fitting tab
+# # fitting the intervention lines to the data to account for any historical interventions
+# time<-as.Date(out0$mean[,1]+startdate)
+# par(mfrow=c(1,2))
+# # set up the axis limits
+# xmin<-min(as.Date(cases_rv[,1]))
+# xmax<-max(as.Date(cases_rv[,1]))
+# ymax<-max(cases_rv[,2],na.rm = T)
+# xtick<-seq(xmin, xmax, by=7)
+# plot(time,rowSums(simul_interventions$daily_incidence),type='l',lwd=3,
+#      main="New Reported Cases", xlab="Date", ylab="Cases per day",
+#      xlim=c(xmin,xmax),  ylim=c(0,ymax), col='blue',xaxt="n")
+# axis(side=1, labels = FALSE)
+# text(x=xtick,  y=-250, labels = format(xtick,"%b-%d"), srt = 0, xpd = TRUE)
+# points(as.Date(cases_rv[,1]),cases_rv[,2],pch=19,col='red')
+
+# # reset the maximum to the cumulative mortality
+# ymax<-max(cases_rv[,3],na.rm = T)
+# plot(time,simul_interventions$cum_mortality,type='l',lwd=3,
+#      main="Cumulative Mortality", xlab="Date", ylab="Total deaths",
+#      xlim=c(xmin,xmax), ylim=c(0,ymax), col='blue',xaxt="n")
+# text(x=xtick,  y=-100, labels = format(xtick,"%b-%d"), srt = 0, xpd = TRUE)
+# points(as.Date(cases_rv[,1]),cases_rv[,3],pch=19,col='red')
 
 
-
-# # # Hospital prevalences stratified by H,ICU and Vent
-ymax<-max(c((simul_baseline$hospital_surge_beds+simul_baseline$icu_beds+simul_baseline$ventilators),(simul_interventions$hospital_surge_beds+simul_interventions$icu_beds+simul_interventions$ventilators)))
-time<-as.Date(out0$mean[,1]+startdate)
-coul=c("#047883", "#24A9E2","#051A46")
-DM<-as.data.frame(cbind(time,simul_baseline$hospital_surge_beds,simul_baseline$icu_beds,simul_baseline$ventilators))
-colnames(DM)<-c("Time","Hospital surge beds","ICU beds","Ventilators")
-DM$Time<-as.Date(DM$Time,origin = "1970-01-01")
-DMF<-melt(DM, id.vars="Time",measure.vars = c("Hospital surge beds","ICU beds","Ventilators"))
-d0<-ggplot(DMF, aes(x = Time, y = value,fill=variable)) +
-  geom_area()+
-  scale_fill_manual(values=coul)
-
-DM<-as.data.frame(cbind(time,simul_interventions$hospital_surge_beds,simul_interventions$icu_beds,simul_interventions$ventilators))
-colnames(DM)<-c("Time","Hospital surge beds","ICU beds","Ventilators")
-DM$Time<-as.Date(DM$Time, origin = "1970-01-01")
-DMF<-melt(DM, id.vars="Time",measure.vars = c("Hospital surge beds","ICU beds","Ventilators"))
-d1<-ggplot(DMF, aes(x = Time, y = value,fill=variable)) +
-  geom_area()+
-  scale_fill_manual(values=coul)
-
-grid.arrange(d0+ylab("Number of Patients")+
-               ggtitle("Baseline")+
-               ylim(0, ymax)+
-               geom_hline(yintercept=(parameters["beds_available"]+parameters["icu_beds_available"]+parameters["ventilators_available"]), linetype="dashed", color = "#047883")+
-               geom_hline(yintercept=(parameters["icu_beds_available"]+parameters["ventilators_available"]), linetype="dashed", color = "#24A9E2")+
-               geom_hline(yintercept=parameters["ventilators_available"], linetype="dashed", color = "#051A46")+
-               theme_bw(),
-             d1+ylab("Number of Patients")+
-               ggtitle("Intervention")+
-               ylim(0, ymax)+
-               geom_hline(yintercept=(parameters["beds_available"]+parameters["icu_beds_available"]+parameters["ventilators_available"]), linetype="dashed", color = "#047883")+
-               geom_hline(yintercept=(parameters["icu_beds_available"]+parameters["ventilators_available"]), linetype="dashed", color = "#24A9E2")+
-               geom_hline(yintercept=parameters["ventilators_available"], linetype="dashed", color = "#051A46")+
-               theme_bw(),
-             nrow = 1)
-
-
-# # # Cumulative mortality at baseline and intervention stratified by hospital status
-ymax<-max(rowSums(cbind(simul_baseline$death_treated_hospital,
-              simul_baseline$death_treated_icu,
-              simul_baseline$death_treated_ventilator,
-              simul_baseline$death_untreated_hospital,
-              simul_baseline$death_untreated_icu,
-              simul_baseline$death_untreated_ventilator)), rowSums(cbind(simul_interventions$death_treated_hospital,
-                                                              simul_interventions$death_treated_icu,
-                                                              simul_interventions$death_treated_ventilator,
-                                                              simul_interventions$death_untreated_hospital,
-                                                              simul_interventions$death_untreated_icu,
-                                                              simul_interventions$death_untreated_ventilator)))
-time<-as.Date(out$mean[,1]+startdate)
-coul=c("#047883", "#24A9E2","#051A46","#E68029", "#D63304","#D1D604")
-DM0<-as.data.frame(cbind(time,
-                         simul_baseline$death_treated_hospital,
-                         simul_baseline$death_treated_icu,
-                         simul_baseline$death_treated_ventilator,
-                         simul_baseline$death_untreated_hospital,
-                         simul_baseline$death_untreated_icu,
-                         simul_baseline$death_untreated_ventilator))
-colnames(DM0)<-c("Time", "Treated: Hospital","Treated: ICU","Treated: Ventilator","Untreated: Hospital","Untreated: ICU","Untreated: Ventilator")
-DM0$Time<-as.Date(DM0$Time, origin = "1970-01-01")
-DMF0<-melt(DM0, id.vars="Time",measure.vars = c("Treated: Hospital","Treated: ICU","Treated: Ventilator","Untreated: Hospital","Untreated: ICU","Untreated: Ventilator"))
-m0<-ggplot(DMF0, aes(x = Time, y = value,fill=variable)) +
-  geom_area()
-
-DM<-as.data.frame(cbind(time, 
-                        simul_interventions$death_treated_hospital,
-                        simul_interventions$death_treated_icu,
-                        simul_interventions$death_treated_ventilator,
-                        simul_interventions$death_untreated_hospital,
-                        simul_interventions$death_untreated_icu,
-                        simul_interventions$death_untreated_ventilator))
-colnames(DM)<-c("Time","Treated: Hospital","Treated: ICU","Treated: Ventilator","Untreated: Hospital","Untreated: ICU","Untreated: Ventilator")
-DM$Time<-as.Date(DM$Time, origin = "1970-01-01")
-DMF<-melt(DM, id.vars="Time",measure.vars = c("Treated: Hospital","Treated: ICU","Treated: Ventilator","Untreated: Hospital","Untreated: ICU","Untreated: Ventilator"))
-m1<-ggplot(DMF, aes(x = Time, y = value,fill=variable)) +
-  geom_area()
-grid.arrange(m0+ylab("Cumulatice mortality")+
-               ggtitle("Baseline")+
-               ylim(0, ymax),
-             m1+ylab("Cumulatice mortality")+
-               ggtitle("Intervention")+
-               ylim(0, ymax),
-             nrow = 1)
+# ### Predictions tab
+# par(mfrow=c(1,2))
+# ### Cases at baseline and intervention
+# ymax<-max(c(cases_rv[,2],rowSums(simul_baseline$daily_incidence),rowSums(simul_interventions$daily_incidence)),na.rm=T)
+# plot(time,rowSums(simul_baseline$daily_incidence),type='l',lwd=3,col='blue',
+#      main="Baseline", xlab="Date", ylab="New cases per day",ylim=c(0,ymax))
+# points(as.Date(cases_rv[,1]),cases_rv[,2],pch=19,col='red')
+# plot(time,rowSums(simul_interventions$daily_incidence),type='l',lwd=3,col='blue',
+#      main="Intervention", xlab="Date", ylab="New cases per day",ylim=c(0,ymax))
+# points(as.Date(cases_rv[,1]),cases_rv[,2],pch=19,col='red')
 
 
 
-# Estimated basic reproduction number, R_t
-par(mfrow=c(1,2))
-ymax<-max(c(simul_baseline$Rt[!is.na(simul_baseline$Rt)],simul_interventions$Rt[!is.na(simul_interventions$Rt)]))
-plot(time,simul_baseline$Rt,type='l',lwd=3,col='black',
-     main="Baseline", xlab="Date", ylab="Reproduction number",ylim=c(0,ymax))
-lines(time,simul_baseline$Rt/simul_baseline$Rt,lwd=2,col='grey')
-plot(time,simul_interventions$Rt,type='l',lwd=3,col='black',
-     main="Intervention", xlab="Date", ylab="Reproduction number",ylim=c(0,ymax))
-lines(time,simul_interventions$Rt/simul_interventions$Rt,lwd=2,col='grey')
+# # # # Hospital prevalences stratified by H,ICU and Vent
+# ymax<-max(c((simul_baseline$hospital_surge_beds+simul_baseline$icu_beds+simul_baseline$ventilators),(simul_interventions$hospital_surge_beds+simul_interventions$icu_beds+simul_interventions$ventilators)))
+# time<-as.Date(out0$mean[,1]+startdate)
+# coul=c("#047883", "#24A9E2","#051A46")
+# DM<-as.data.frame(cbind(time,simul_baseline$hospital_surge_beds,simul_baseline$icu_beds,simul_baseline$ventilators))
+# colnames(DM)<-c("Time","Hospital surge beds","ICU beds","Ventilators")
+# DM$Time<-as.Date(DM$Time,origin = "1970-01-01")
+# DMF<-melt(DM, id.vars="Time",measure.vars = c("Hospital surge beds","ICU beds","Ventilators"))
+# d0<-ggplot(DMF, aes(x = Time, y = value,fill=variable)) +
+#   geom_area()+
+#   scale_fill_manual(values=coul)
+
+# DM<-as.data.frame(cbind(time,simul_interventions$hospital_surge_beds,simul_interventions$icu_beds,simul_interventions$ventilators))
+# colnames(DM)<-c("Time","Hospital surge beds","ICU beds","Ventilators")
+# DM$Time<-as.Date(DM$Time, origin = "1970-01-01")
+# DMF<-melt(DM, id.vars="Time",measure.vars = c("Hospital surge beds","ICU beds","Ventilators"))
+# d1<-ggplot(DMF, aes(x = Time, y = value,fill=variable)) +
+#   geom_area()+
+#   scale_fill_manual(values=coul)
+
+# grid.arrange(d0+ylab("Number of Patients")+
+#                ggtitle("Baseline")+
+#                ylim(0, ymax)+
+#                geom_hline(yintercept=(parameters["beds_available"]+parameters["icu_beds_available"]+parameters["ventilators_available"]), linetype="dashed", color = "#047883")+
+#                geom_hline(yintercept=(parameters["icu_beds_available"]+parameters["ventilators_available"]), linetype="dashed", color = "#24A9E2")+
+#                geom_hline(yintercept=parameters["ventilators_available"], linetype="dashed", color = "#051A46")+
+#                theme_bw(),
+#              d1+ylab("Number of Patients")+
+#                ggtitle("Intervention")+
+#                ylim(0, ymax)+
+#                geom_hline(yintercept=(parameters["beds_available"]+parameters["icu_beds_available"]+parameters["ventilators_available"]), linetype="dashed", color = "#047883")+
+#                geom_hline(yintercept=(parameters["icu_beds_available"]+parameters["ventilators_available"]), linetype="dashed", color = "#24A9E2")+
+#                geom_hline(yintercept=parameters["ventilators_available"], linetype="dashed", color = "#051A46")+
+#                theme_bw(),
+#              nrow = 1)
 
 
-dexo2_hist <- rep(0,length(times))
-dexo2c_hist <- rep(0,length(times))
-dexv_hist <- rep(0,length(times))
-dexvc_hist <- rep(0,length(times))
-for (tt in times) {
-  if(tt < max(times)){
-    if(vectors$dex[tt*20+1]) {
-      dexo2_hist[tt+1] <- parameters["dexo2"]
-      dexo2c_hist[tt+1] <- parameters["dexo2c"]
-      dexv_hist[tt+1] <- parameters["dexv"]
-      dexvc_hist[tt+1] <- parameters["dexvc"]
-    } else {
-      dexo2_hist[tt+1] <- 1
-      dexo2c_hist[tt+1] <- 1
-      dexv_hist[tt+1] <- 1
-      dexvc_hist[tt+1] <- 1
-    }
-  } else {
-    dexo2_hist[tt+1] <- dexo2_hist[tt]
-    dexo2c_hist[tt+1] <- dexo2c_hist[tt]
-    dexv_hist[tt+1] <- dexv_hist[tt]
-    dexvc_hist[tt+1] <- dexvc_hist[tt]
-  }
-}
+# # # # Cumulative mortality at baseline and intervention stratified by hospital status
+# ymax<-max(rowSums(cbind(simul_baseline$death_treated_hospital,
+#               simul_baseline$death_treated_icu,
+#               simul_baseline$death_treated_ventilator,
+#               simul_baseline$death_untreated_hospital,
+#               simul_baseline$death_untreated_icu,
+#               simul_baseline$death_untreated_ventilator)), rowSums(cbind(simul_interventions$death_treated_hospital,
+#                                                               simul_interventions$death_treated_icu,
+#                                                               simul_interventions$death_treated_ventilator,
+#                                                               simul_interventions$death_untreated_hospital,
+#                                                               simul_interventions$death_untreated_icu,
+#                                                               simul_interventions$death_untreated_ventilator)))
+# time<-as.Date(out$mean[,1]+startdate)
+# coul=c("#047883", "#24A9E2","#051A46","#E68029", "#D63304","#D1D604")
+# DM0<-as.data.frame(cbind(time,
+#                          simul_baseline$death_treated_hospital,
+#                          simul_baseline$death_treated_icu,
+#                          simul_baseline$death_treated_ventilator,
+#                          simul_baseline$death_untreated_hospital,
+#                          simul_baseline$death_untreated_icu,
+#                          simul_baseline$death_untreated_ventilator))
+# colnames(DM0)<-c("Time", "Treated: Hospital","Treated: ICU","Treated: Ventilator","Untreated: Hospital","Untreated: ICU","Untreated: Ventilator")
+# DM0$Time<-as.Date(DM0$Time, origin = "1970-01-01")
+# DMF0<-melt(DM0, id.vars="Time",measure.vars = c("Treated: Hospital","Treated: ICU","Treated: Ventilator","Untreated: Hospital","Untreated: ICU","Untreated: Ventilator"))
+# m0<-ggplot(DMF0, aes(x = Time, y = value,fill=variable)) +
+#   geom_area()
 
-## AGE DEPENDENT MORTALITY
-cinc_mort_H1 <- parameters["nus"]*parameters["propo2"]*parameters["pdeath_ho"]*dexo2_hist*(out$mean[,(Hindex+1)])+
-  parameters["nus"]*(1-parameters["propo2"])*parameters["pdeath_h"]*(out$mean[,(Hindex+1)])
-cinc_mort_HC1 <- parameters["nusc"]*parameters["report_death_HC"]*parameters["propo2"]*parameters["pdeath_hco"]*(out$mean[,(HCindex+1)])+
-  parameters["nusc"]*parameters["report_death_HC"]*(1-parameters["propo2"])*parameters["pdeath_hc"]*(out$mean[,(HCindex+1)])
-cinc_mort_ICU1 <- parameters["nu_icu"]*parameters["propo2"]*parameters["pdeath_icuo"]*dexo2_hist*(out$mean[,(ICUindex+1)])+
-  parameters["nu_icu"]*(1-parameters["propo2"])*parameters["pdeath_icu"]*(out$mean[,(ICUindex+1)])
-cinc_mort_ICUC1 <- parameters["nu_icuc"]*parameters["propo2"]*parameters["pdeath_icuco"]*dexo2c_hist*(out$mean[,(ICUCindex+1)] )+
-  parameters["nu_icuc"]*(1-parameters["propo2"])*parameters["pdeath_icuc"]*(out$mean[,(ICUCindex+1)] )
-cinc_mort_Vent1  <- parameters["nu_vent"]*parameters["pdeath_vent"]*dexv_hist*(out$mean[,(Ventindex+1)] )
-cinc_mort_VentC1 <- parameters["nu_ventc"]*parameters["pdeath_ventc"]*dexvc_hist*(out$mean[,(VentCindex+1)] )
-cinc_mort_ICUCV1 <- parameters["nu_ventc"]*parameters["pdeath_ventc"]*dexvc_hist*(out$mean[,(ICUCVindex+1)] )
-cinc_mort_HCICU1 <- parameters["nusc"]*parameters["report_death_HC"]*parameters["propo2"]*parameters["pdeath_icu_hco"]*(out$mean[,(HCICUindex+1)] )+
-  parameters["nusc"]*parameters["report_death_HC"]*(1-parameters["propo2"])*parameters["pdeath_icu_hc"]*(out$mean[,(HCICUindex+1)] )
-cinc_mort_HCV1 <- parameters["nu_ventc"]*parameters["report_death_HC"]*parameters["pdeath_vent_hc"]*(out$mean[,(HCVindex+1)] )
-
-totage1<-as.data.frame(cinc_mort_H1+cinc_mort_HC1+cinc_mort_ICU1+cinc_mort_ICUC1+
-                         cinc_mort_Vent1+cinc_mort_VentC1+cinc_mort_ICUCV1+cinc_mort_HCICU1+cinc_mort_HCV1)
-
-basemort_H1<-(out$mean[,(Hindex+1)])
-basemort_HC1<-parameters["report_death_HC"]*(out$mean[,(HCindex+1)])
-basemort_ICU1<-(out$mean[,(ICUindex+1)])
-basemort_ICUC1<-(out$mean[,(ICUCindex+1)])
-basemort_ICUCV1<-(out$mean[,(ICUCVindex+1)])
-basemort_Vent1<-(out$mean[,(Ventindex+1)])
-basemort_VentC1<-(out$mean[,(VentCindex+1)])
-basemort_HCICU1<-parameters["report_death_HC"]*(out$mean[,(HCICUindex+1)])
-basemort_HCV1<-parameters["report_death_HC"]*(out$mean[,(HCVindex+1)])
-basemort_I<-parameters["report_natdeathI"]*(out$mean[,(Iindex+1)])
-basemort_QI<-parameters["report_natdeathI"]*(out$mean[,(QIindex+1)])
-basemort_E<-parameters["report_natdeathI"]*(out$mean[,(Eindex+1)])
-basemort_QE<-parameters["report_natdeathI"]*(out$mean[,(QEindex+1)])
-basemort_EV<-parameters["report_natdeathI"]*(out$mean[,(EVindex+1)])
-basemort_EVR<-parameters["report_natdeathI"]*(out$mean[,(EVRindex+1)])
-basemort_ER<-parameters["report_natdeathI"]*(out$mean[,(ERindex+1)])
-basemort_QEV<-parameters["report_natdeathI"]*(out$mean[,(QEVindex+1)])
-basemort_QEVR<-parameters["report_natdeathI"]*(out$mean[,(QEVRindex+1)])
-basemort_QER<-parameters["report_natdeathI"]*(out$mean[,(QERindex+1)])
-basemort_CL<-parameters["report_natdeathCL"]*(out$mean[,(CLindex+1)])
-basemort_QC<-parameters["report_natdeathCL"]*(out$mean[,(QCindex+1)])
-basemort_X<-parameters["report_natdeathCL"]*(out$mean[,(Xindex+1)])
-
-totbase1<-as.data.frame(basemort_H1+basemort_HC1+basemort_ICU1+basemort_ICUC1+basemort_ICUCV1+
-                          basemort_Vent1+basemort_VentC1+basemort_HCICU1+basemort_HCV1+ 
-                          basemort_I+basemort_QI+basemort_E+basemort_QE+basemort_EV+basemort_EVR+
-                          basemort_ER+basemort_QEV+basemort_QEVR+basemort_QER+basemort_CL+basemort_QC+basemort_X)
-
-tc<-c()
-for (i in 1:dim(cinc_mort_H1)[1]) {
-  for (j in 1:dim(cinc_mort_H1)[2]) {
-    # print(totage1[i,j]*ifr[j,2]+totbase1[i,j]*mort[j])
-    tc<-rbind(tc,c(i, j, totage1[i,j]*ifr[j,2]+totbase1[i,j]*mort[j]))
-  }
-}
-tc<-as.data.frame(tc)
-colnames(tc)<-c("Day","Age","value")
-tc$Age<-as.factor(tc$Age)
-p6<-ggplot(data=tc, aes(x=Day,y=value,fill=Age))+
-  geom_bar(stat = "identity",position="fill", width=1)+
-  ylab("Proportion of deaths")
-p6
-
-ee<-matrix(0,nrow = A, ncol = dim(cinc_mort_H1)[1])
-for(i in 1:A){
-  ww<-which(tc$Age==i)
-  ee[i,]<-cumsum(tc$value[ww])
-}
-sum(ee[,516])
-simul_interventions$total_reported_deaths_end
+# DM<-as.data.frame(cbind(time, 
+#                         simul_interventions$death_treated_hospital,
+#                         simul_interventions$death_treated_icu,
+#                         simul_interventions$death_treated_ventilator,
+#                         simul_interventions$death_untreated_hospital,
+#                         simul_interventions$death_untreated_icu,
+#                         simul_interventions$death_untreated_ventilator))
+# colnames(DM)<-c("Time","Treated: Hospital","Treated: ICU","Treated: Ventilator","Untreated: Hospital","Untreated: ICU","Untreated: Ventilator")
+# DM$Time<-as.Date(DM$Time, origin = "1970-01-01")
+# DMF<-melt(DM, id.vars="Time",measure.vars = c("Treated: Hospital","Treated: ICU","Treated: Ventilator","Untreated: Hospital","Untreated: ICU","Untreated: Ventilator"))
+# m1<-ggplot(DMF, aes(x = Time, y = value,fill=variable)) +
+#   geom_area()
+# grid.arrange(m0+ylab("Cumulatice mortality")+
+#                ggtitle("Baseline")+
+#                ylim(0, ymax),
+#              m1+ylab("Cumulatice mortality")+
+#                ggtitle("Intervention")+
+#                ylim(0, ymax),
+#              nrow = 1)
 
 
-####### PLOT Abs 
-samp.sizes<-round(rnorm(length(times),parameters["sample_size"],parameters["sample_size"]/5))
-ab0<-as.data.frame(matrix(0,nrow=length(times)*1000,ncol=2))
-colnames(ab0)<-c("Time","Ab")
-ab0$Time<-rep(times,1000)
-aux<-c()
-for (i in 1:1000) {
-  num.inf.samp <- rbinom(length(times), size = samp.sizes, prob = (simul_baseline$ab_all_ages/simul_baseline$N))
-  aux<-c(aux,num.inf.samp/samp.sizes)
-}
-ab0$Ab<-aux
-ggplot(ab0,aes(x=Time,y=Ab,group=Time))+geom_boxplot()
 
-samp.sizes<-round(rnorm(length(times),parameters["sample_size"],parameters["sample_size"]/5))
-ab<-as.data.frame(matrix(0,nrow=length(times)*1000,ncol=2))
-colnames(ab)<-c("Time","Ab")
-ab$Time<-rep(times,1000)
-aux<-c()
-for (i in 1:1000) {
-  num.inf.samp <- rbinom(length(times), size = samp.sizes, prob = (simul_interventions$ab_all_ages/simul_interventions$N))
-  aux<-c(aux,num.inf.samp/samp.sizes)
-}
-se<-0.5
-sp<-0.9
-ab$Ab<-se*aux+(1-sp)*(1-aux)
-ggplot(ab,aes(x=Time,y=Ab,group=Time))+geom_boxplot()
+# # Estimated basic reproduction number, R_t
+# par(mfrow=c(1,2))
+# ymax<-max(c(simul_baseline$Rt[!is.na(simul_baseline$Rt)],simul_interventions$Rt[!is.na(simul_interventions$Rt)]))
+# plot(time,simul_baseline$Rt,type='l',lwd=3,col='black',
+#      main="Baseline", xlab="Date", ylab="Reproduction number",ylim=c(0,ymax))
+# lines(time,simul_baseline$Rt/simul_baseline$Rt,lwd=2,col='grey')
+# plot(time,simul_interventions$Rt,type='l',lwd=3,col='black',
+#      main="Intervention", xlab="Date", ylab="Reproduction number",ylim=c(0,ymax))
+# lines(time,simul_interventions$Rt/simul_interventions$Rt,lwd=2,col='grey')
 
 
-##########################################################################################################################
-######   SUMMARY METRICS  ################################################################################################
-########################################################################################################################
+# dexo2_hist <- rep(0,length(times))
+# dexo2c_hist <- rep(0,length(times))
+# dexv_hist <- rep(0,length(times))
+# dexvc_hist <- rep(0,length(times))
+# for (tt in times) {
+#   if(tt < max(times)){
+#     if(vectors$dex[tt*20+1]) {
+#       dexo2_hist[tt+1] <- parameters["dexo2"]
+#       dexo2c_hist[tt+1] <- parameters["dexo2c"]
+#       dexv_hist[tt+1] <- parameters["dexv"]
+#       dexvc_hist[tt+1] <- parameters["dexvc"]
+#     } else {
+#       dexo2_hist[tt+1] <- 1
+#       dexo2c_hist[tt+1] <- 1
+#       dexv_hist[tt+1] <- 1
+#       dexvc_hist[tt+1] <- 1
+#     }
+#   } else {
+#     dexo2_hist[tt+1] <- dexo2_hist[tt]
+#     dexo2c_hist[tt+1] <- dexo2c_hist[tt]
+#     dexv_hist[tt+1] <- dexv_hist[tt]
+#     dexvc_hist[tt+1] <- dexvc_hist[tt]
+#   }
+# }
 
-infected0<-tail((rowSums(out0$mean[,(Rindex+1)])),1)/sum(popstruc[,2])
-infected0
-infected1<-tail((rowSums(out$mean[,(Rindex+1)])),1)/sum(popstruc[,2])
-infected1
+# ## AGE DEPENDENT MORTALITY
+# cinc_mort_H1 <- parameters["nus"]*parameters["propo2"]*parameters["pdeath_ho"]*dexo2_hist*(out$mean[,(Hindex+1)])+
+#   parameters["nus"]*(1-parameters["propo2"])*parameters["pdeath_h"]*(out$mean[,(Hindex+1)])
+# cinc_mort_HC1 <- parameters["nusc"]*parameters["report_death_HC"]*parameters["propo2"]*parameters["pdeath_hco"]*(out$mean[,(HCindex+1)])+
+#   parameters["nusc"]*parameters["report_death_HC"]*(1-parameters["propo2"])*parameters["pdeath_hc"]*(out$mean[,(HCindex+1)])
+# cinc_mort_ICU1 <- parameters["nu_icu"]*parameters["propo2"]*parameters["pdeath_icuo"]*dexo2_hist*(out$mean[,(ICUindex+1)])+
+#   parameters["nu_icu"]*(1-parameters["propo2"])*parameters["pdeath_icu"]*(out$mean[,(ICUindex+1)])
+# cinc_mort_ICUC1 <- parameters["nu_icuc"]*parameters["propo2"]*parameters["pdeath_icuco"]*dexo2c_hist*(out$mean[,(ICUCindex+1)] )+
+#   parameters["nu_icuc"]*(1-parameters["propo2"])*parameters["pdeath_icuc"]*(out$mean[,(ICUCindex+1)] )
+# cinc_mort_Vent1  <- parameters["nu_vent"]*parameters["pdeath_vent"]*dexv_hist*(out$mean[,(Ventindex+1)] )
+# cinc_mort_VentC1 <- parameters["nu_ventc"]*parameters["pdeath_ventc"]*dexvc_hist*(out$mean[,(VentCindex+1)] )
+# cinc_mort_ICUCV1 <- parameters["nu_ventc"]*parameters["pdeath_ventc"]*dexvc_hist*(out$mean[,(ICUCVindex+1)] )
+# cinc_mort_HCICU1 <- parameters["nusc"]*parameters["report_death_HC"]*parameters["propo2"]*parameters["pdeath_icu_hco"]*(out$mean[,(HCICUindex+1)] )+
+#   parameters["nusc"]*parameters["report_death_HC"]*(1-parameters["propo2"])*parameters["pdeath_icu_hc"]*(out$mean[,(HCICUindex+1)] )
+# cinc_mort_HCV1 <- parameters["nu_ventc"]*parameters["report_death_HC"]*parameters["pdeath_vent_hc"]*(out$mean[,(HCVindex+1)] )
+
+# totage1<-as.data.frame(cinc_mort_H1+cinc_mort_HC1+cinc_mort_ICU1+cinc_mort_ICUC1+
+#                          cinc_mort_Vent1+cinc_mort_VentC1+cinc_mort_ICUCV1+cinc_mort_HCICU1+cinc_mort_HCV1)
+
+# basemort_H1<-(out$mean[,(Hindex+1)])
+# basemort_HC1<-parameters["report_death_HC"]*(out$mean[,(HCindex+1)])
+# basemort_ICU1<-(out$mean[,(ICUindex+1)])
+# basemort_ICUC1<-(out$mean[,(ICUCindex+1)])
+# basemort_ICUCV1<-(out$mean[,(ICUCVindex+1)])
+# basemort_Vent1<-(out$mean[,(Ventindex+1)])
+# basemort_VentC1<-(out$mean[,(VentCindex+1)])
+# basemort_HCICU1<-parameters["report_death_HC"]*(out$mean[,(HCICUindex+1)])
+# basemort_HCV1<-parameters["report_death_HC"]*(out$mean[,(HCVindex+1)])
+# basemort_I<-parameters["report_natdeathI"]*(out$mean[,(Iindex+1)])
+# basemort_QI<-parameters["report_natdeathI"]*(out$mean[,(QIindex+1)])
+# basemort_E<-parameters["report_natdeathI"]*(out$mean[,(Eindex+1)])
+# basemort_QE<-parameters["report_natdeathI"]*(out$mean[,(QEindex+1)])
+# basemort_EV<-parameters["report_natdeathI"]*(out$mean[,(EVindex+1)])
+# basemort_EVR<-parameters["report_natdeathI"]*(out$mean[,(EVRindex+1)])
+# basemort_ER<-parameters["report_natdeathI"]*(out$mean[,(ERindex+1)])
+# basemort_QEV<-parameters["report_natdeathI"]*(out$mean[,(QEVindex+1)])
+# basemort_QEVR<-parameters["report_natdeathI"]*(out$mean[,(QEVRindex+1)])
+# basemort_QER<-parameters["report_natdeathI"]*(out$mean[,(QERindex+1)])
+# basemort_CL<-parameters["report_natdeathCL"]*(out$mean[,(CLindex+1)])
+# basemort_QC<-parameters["report_natdeathCL"]*(out$mean[,(QCindex+1)])
+# basemort_X<-parameters["report_natdeathCL"]*(out$mean[,(Xindex+1)])
+
+# totbase1<-as.data.frame(basemort_H1+basemort_HC1+basemort_ICU1+basemort_ICUC1+basemort_ICUCV1+
+#                           basemort_Vent1+basemort_VentC1+basemort_HCICU1+basemort_HCV1+ 
+#                           basemort_I+basemort_QI+basemort_E+basemort_QE+basemort_EV+basemort_EVR+
+#                           basemort_ER+basemort_QEV+basemort_QEVR+basemort_QER+basemort_CL+basemort_QC+basemort_X)
+
+# tc<-c()
+# for (i in 1:dim(cinc_mort_H1)[1]) {
+#   for (j in 1:dim(cinc_mort_H1)[2]) {
+#     # print(totage1[i,j]*ifr[j,2]+totbase1[i,j]*mort[j])
+#     tc<-rbind(tc,c(i, j, totage1[i,j]*ifr[j,2]+totbase1[i,j]*mort[j]))
+#   }
+# }
+# tc<-as.data.frame(tc)
+# colnames(tc)<-c("Day","Age","value")
+# tc$Age<-as.factor(tc$Age)
+# p6<-ggplot(data=tc, aes(x=Day,y=value,fill=Age))+
+#   geom_bar(stat = "identity",position="fill", width=1)+
+#   ylab("Proportion of deaths")
+# p6
+
+# ee<-matrix(0,nrow = A, ncol = dim(cinc_mort_H1)[1])
+# for(i in 1:A){
+#   ww<-which(tc$Age==i)
+#   ee[i,]<-cumsum(tc$value[ww])
+# }
+# sum(ee[,516])
+# simul_interventions$total_reported_deaths_end
+
+
+# ####### PLOT Abs 
+# samp.sizes<-round(rnorm(length(times),parameters["sample_size"],parameters["sample_size"]/5))
+# ab0<-as.data.frame(matrix(0,nrow=length(times)*1000,ncol=2))
+# colnames(ab0)<-c("Time","Ab")
+# ab0$Time<-rep(times,1000)
+# aux<-c()
+# for (i in 1:1000) {
+#   num.inf.samp <- rbinom(length(times), size = samp.sizes, prob = (simul_baseline$ab_all_ages/simul_baseline$N))
+#   aux<-c(aux,num.inf.samp/samp.sizes)
+# }
+# ab0$Ab<-aux
+# ggplot(ab0,aes(x=Time,y=Ab,group=Time))+geom_boxplot()
+
+# samp.sizes<-round(rnorm(length(times),parameters["sample_size"],parameters["sample_size"]/5))
+# ab<-as.data.frame(matrix(0,nrow=length(times)*1000,ncol=2))
+# colnames(ab)<-c("Time","Ab")
+# ab$Time<-rep(times,1000)
+# aux<-c()
+# for (i in 1:1000) {
+#   num.inf.samp <- rbinom(length(times), size = samp.sizes, prob = (simul_interventions$ab_all_ages/simul_interventions$N))
+#   aux<-c(aux,num.inf.samp/samp.sizes)
+# }
+# se<-0.5
+# sp<-0.9
+# ab$Ab<-se*aux+(1-sp)*(1-aux)
+# ggplot(ab,aes(x=Time,y=Ab,group=Time))+geom_boxplot()
+
+
+# ##########################################################################################################################
+# ######   SUMMARY METRICS  ################################################################################################
+# ########################################################################################################################
+
+# infected0<-tail((rowSums(out0$mean[,(Rindex+1)])),1)/sum(popstruc[,2])
+# infected0
+# infected1<-tail((rowSums(out$mean[,(Rindex+1)])),1)/sum(popstruc[,2])
+# infected1
 
 
 
