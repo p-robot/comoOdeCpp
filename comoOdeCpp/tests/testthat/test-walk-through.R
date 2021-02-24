@@ -5,7 +5,8 @@ test_that("Walk-through (v16.8) of the model code", {
   source(paste0(getwd(), "/common.R"), local = environment())
   init(e = environment())
 
-  file_path <- paste0(getwd(), "/data/templates_v16.8/Template_CoMoCOVID-19App_v17_all_interventions.xlsx")
+  # file_path <- paste0(getwd(), "/data/templates_v16.8/Template_CoMoCOVID-19App_v17_all_interventions.xlsx")
+  file_path <- paste0(getwd(), "/data/templates_v16.8/Template_CoMoCOVID-19App_v17_school_closure.xlsx")
 
   if (!exists("inputs", mode = "function")) {
     source(paste0(getwd(), CORE_FILE), local = environment())
@@ -42,7 +43,7 @@ test_that("Walk-through (v16.8) of the model code", {
       #       sd = noise * abs(parameters[parameters_noise])
       #     )
 
-      RUN_CPP <- FALSE
+      RUN_CPP <- TRUE
       RUN_R <- TRUE
 
       if (RUN_CPP) {
@@ -74,47 +75,35 @@ test_that("Walk-through (v16.8) of the model code", {
 
         expect_equal(output_message, "covidOdeCpp: splinefuns updated")
 
-        processed_cpp_results <- process_ode_outcome_mortality(out_cpp, ss, param_vector)
+        processed_cpp_results <- process_ode_outcome(out_cpp, ss, param_vector)
+        # print("processed_cpp_results$total_reported_deaths_end:")
+        # print(processed_cpp_results$total_reported_deaths_end)
 
-        expect_equal(
-          processed_cpp_results$total_reportable_deaths_end,
-          processed_cpp_results$total_cm_deaths_end,
-          tolerance = 0.1,
-          scale = processed_cpp_results$total_cm_deaths_end
-        )
       }
 
       if (RUN_R) {
         # start_time <- Sys.time()
+        # print("age_group_vectors:")
+        # print(age_group_vectors)
+
         expect_silent(
           out_r <- ode(
                     y = Y, times = times, method = "euler", hini = 0.05,
                     func = covid, parms = param_vector, input = ss
                     )
         )
+
+        # print("dim(out_r):")
+        # print(dim(out_r))
         # elapsed_time <- Sys.time() - start_time
 
         # print("R version time:")
         # print(elapsed_time)
 
-        # processed_r_results <- process_ode_outcome_mortality(out_r, ss, param_vector)
-        # expect_equal(
-        #   processed_r_results$total_reportable_deaths_end,
-        #   processed_r_results$total_cm_deaths_end,
-        #   tolerance = 0.1,
-        #   scale = processed_r_results$total_cm_deaths_end
-        # )
         processed_r_results <- process_ode_outcome(out_r, ss, param_vector)
         print("processed_r_results$total_reported_deaths_end:")
         print(processed_r_results$total_reported_deaths_end)
-        print("last(processed_r_results$attributable_deaths+processed_r_results$death_natural_exposed):")
-        print(last(processed_r_results$attributable_deaths+processed_r_results$death_natural_exposed))
-        # expect_equal(
-        #   processed_r_results$total_reported_deaths_end, # cum_mortality, CMindex+1
-        #   last(processed_r_results$attributable_deaths+processed_r_results$death_natural_exposed),
-        #   tolerance = 0.1,
-        #   scale = processed_r_results$total_reported_deaths_end
-        # )
+
 
       }
 
