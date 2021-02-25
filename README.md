@@ -9,7 +9,7 @@
 
 
 This package implements CoMo Consortium's COVID-19 transmission model in Rcpp.
-comoOdeCpp is designed to work with [CoMo COVID-19 app](https://github.com/ocelhay/como) 
+comoOdeCpp is designed to work with [CoMo COVID-19 app](https://github.com/bogaotory/como) 
 
 
 by Ricardo Aguas, Sompob Saralamba, Bo Gao
@@ -19,14 +19,14 @@ by Ricardo Aguas, Sompob Saralamba, Bo Gao
 
 - GUI option:
 
-  - Download the latest release from [https://github.com/ocelhay/comoOdeCpp/releases](https://github.com/ocelhay/comoOdeCpp/releases), e.g. `comoOdeCpp_13.13.1.tar.gz`
+  - Download the latest release from [https://github.com/bogaotory/comoOdeCpp/releases](https://github.com/bogaotory/comoOdeCpp/releases), e.g. `comoOdeCpp_13.13.1.tar.gz`
 
   - RStudio >> Tools >> Install Packages >> Install from: Package Archive File (.tar.gz) >> Package archive: Browse to select `comoOdeCpp_13.13.1.tar.gz`
 
 
 - R commandline option:
 
-  - Download the latest release from [https://github.com/ocelhay/comoOdeCpp/releases](https://github.com/ocelhay/comoOdeCpp/releases), e.g. `comoOdeCpp_13.13.1.tar.gz`
+  - Download the latest release from [https://github.com/bogaotory/comoOdeCpp/releases](https://github.com/bogaotory/comoOdeCpp/releases), e.g. `comoOdeCpp_13.13.1.tar.gz`
 
   - `install.packages("path_to_download/comoOdeCpp_13.13.1.tar.gz", repos = NULL, type="source")`
 
@@ -37,7 +37,7 @@ by Ricardo Aguas, Sompob Saralamba, Bo Gao
 
 install.packages("devtools")
 library("devtools")
-install_github("ocelhay/comoOdeCpp", subdir="comoOdeCpp")
+install_github("bogaotory/comoOdeCpp", subdir="comoOdeCpp")
 
 ```
 
@@ -58,7 +58,9 @@ out0 <- ode(y = Y, times = times, func = covidOdeCpp, parms = parameters,
             contact_work=contact_work, contact_other=contact_other,
             popbirth_col2=popbirth[,2], popstruc_col2=popstruc[,2],
             ageing=ageing,
-            ifr_col2=ifr[,2], ihr_col2=ihr[,2], mort_col=mort)
+            ifr_col2=ifr[,2], ihr_col2=ihr[,2], mort_col=mort,
+            age_group_vectors = age_group_vectors
+)
 
 
 covidOdeCpp_reset()
@@ -68,7 +70,8 @@ out0 <- ode(y = Y, times = times, method = "euler", hini = 0.05, func = covidOde
             contact_work=contact_work, contact_other=contact_other,
             popbirth_col2=popbirth[,2], popstruc_col2=popstruc[,2],
             ageing=ageing,
-            ifr_col2=ifr[,2], ihr_col2=ihr[,2], mort_col=mort)
+            ifr_col2=ifr[,2], ihr_col2=ihr[,2], mort_col=mort,
+            age_group_vectors = age_group_vectors
 )
 
 
