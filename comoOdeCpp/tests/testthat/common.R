@@ -1,23 +1,18 @@
-CORE_FILE <- "/v16.4.core.mod.16.6.R"
+CORE_FILE <- "/inc/covidage_v16.8.R"
 
-check_libraries <- function() {
+load_libraries <- function() {
   library_list <- list(
-    "deSolve",
+    "deSolve", # ode
     "dplyr",
-    "readxl"
+    "readxl", # read_excel
+    "stringr" # str_replace_all
   )
   for (ll in library_list) {
     if (!requireNamespace(ll, quietly = TRUE)) {
       testthat::skip(paste(ll, "needed but not available"))
     }
+    library(ll, character.only = TRUE)
   }
-}
-
-load_libraries <- function() {
-  check_libraries()
-  library("deSolve")
-  library("dplyr")
-  library("readxl")
   library("comoOdeCpp")
 }
 
@@ -91,22 +86,16 @@ match_processed_outputs <- function(
     tlr = 0.0001 # tolerance
   ) {
 
-  testthat::expect_true(is.numeric(output_a$total_cm_deaths_end))
-  testthat::expect_true(is.numeric(output_a$total_reportable_deaths_end))
+  testthat::expect_true(is.numeric(output_a$total_reported_deaths_end))
+  testthat::expect_true(is.numeric(output_b$total_reported_deaths_end))
 
   testthat::expect_equal(
-      output_a$total_cm_deaths_end,
-      output_b$total_cm_deaths_end,
+      output_a$total_reported_deaths_end,
+      output_b$total_reported_deaths_end,
       tolerance = tlr,
-      scale = output_b$total_cm_deaths_end
+      scale = output_b$total_reported_deaths_end
   )
 
-  testthat::expect_equal(
-      output_a$total_reportable_deaths_end,
-      output_b$total_reportable_deaths_end,
-      tolerance = tlr,
-      scale = output_b$total_reportable_deaths_end
-  )
 }
 
 make_spline_funs <- function(

@@ -193,7 +193,7 @@ List covidOdeCpp(
         static double work_eff = 0.0;
         static double w2h = 0.0;
         // school closures
-        static double school_eff = 0.0;
+        // static double school_eff = 0.0;
         static double s2h = 0.0;
         // cocooning the elderly
         static double cocoon_eff = 0.0;
@@ -507,6 +507,7 @@ List covidOdeCpp(
     int masking   = as<NumericVector>(input["masking"])[my_t];
     int workhome   = as<NumericVector>(input["workhome"])[my_t];
     int schoolclose = as<NumericVector>(input["schoolclose"])[my_t];
+    int schoolclosep = as<NumericVector>(input["schoolclosepartial"])[my_t];
     // int cocoon     = as<NumericVector>(input["cocoon"])[my_t];
     int vaccine    = as<NumericVector>(input["vaccine"])[my_t];
     int travelban  = as<NumericVector>(input["travelban"])[my_t];
@@ -522,6 +523,7 @@ List covidOdeCpp(
     double screen_eff = 0.0;
     double selfis = 0.0;
     double school = 1.0;
+    double school2 = 1.0;
     double dist = 1.0;
     double hand = 0.0;
     double mask = 0.0;
@@ -536,7 +538,8 @@ List covidOdeCpp(
 
     double selfis_cov =      (as<NumericVector>(input["si_vector"])[my_t])/100.0;
     double screen_contacts = (as<NumericVector>(input["scr_vector"])[my_t])/10.0;
-    school_eff =      (as<NumericVector>(input["sc_vector"])[my_t])/100.0;
+    double school_eff =      (as<NumericVector>(input["sc_vector"])[my_t])/100.0;
+    double school_effp =     (as<NumericVector>(input["scp_vector"])[my_t])/100.0;
     double dist_cov =        (as<NumericVector>(input["sd_vector"])[my_t])/100.0;
     double hand_cov =        (as<NumericVector>(input["hw_vector"])[my_t])/100.0;
     double mask_cov =        (as<NumericVector>(input["msk_vector"])[my_t])/100.0;
@@ -586,10 +589,26 @@ List covidOdeCpp(
     }
 
     arma::vec schoolclose2 = arma::vec(A, arma::fill::zeros);
-    if (schoolclose >= 1) {
-      school = school_eff;
+    // if (schoolclose >= 1) {
+    //   school = school_eff;
+    //   schoolclose2 = as<arma::vec>(age_group_vectors[schoolclose-1]);
+    // }
+
+    arma::vec schoolclose2p = arma::vec(A, arma::fill::zeros);
+    arma::vec schoolclose3 = arma::vec(A, arma::fill::zeros);
+    arma::vec schoolclose4 = arma::vec(A, arma::fill::zeros);
+
+    school = school_eff;
+    school2 = school_effp;
+    if (schoolclose >=1) {
       schoolclose2 = as<arma::vec>(age_group_vectors[schoolclose-1]);
     }
+    if (schoolclosep >= 1) {
+      schoolclose2p = as<arma::vec>(age_group_vectors[schoolclosep-1]);
+    }
+    schoolclose3 = arma::max(school * schoolclose2, school2 * schoolclose2p);
+    schoolclose4 = arma::max((1-school) * schoolclose2, (1-school2) * schoolclose2p);
+
 
            if (workhome){
              work = work_cov*work_eff;
@@ -732,9 +751,9 @@ List covidOdeCpp(
         
         // contact matrices
         arma::mat cts = (contact_home+distancing*(1.0-dist)*contact_other+(1.0-distancing)*contact_other
-               +(1.0-schoolclose2)%contact_school.each_col() //# school on
-               +schoolclose2*(1.0-school)%contact_school.each_col() //# school close
-               +(schoolclose2%contact_home.each_col())*school*s2h //# inflating contacts at home when school closes
+               +(1.0-schoolclose3)%contact_school.each_col() //# school on
+               +schoolclose4%contact_school.each_col() //# school close
+               +(schoolclose3%contact_home.each_col())*s2h //# inflating contacts at home when school closes
                +(1.0-workhome)*contact_work  //# normal work
                +workhome*(1.0-work)*contact_work //# people not working from home when homework is active
                +contact_home*workhome*work*w2h //# inflating contacts at home when working from home
@@ -742,7 +761,7 @@ List covidOdeCpp(
 
 
         // Final transmission related parameters
-        arma::mat contacts = (1.0-cocoon)*cts+cocoon*cts%cocoon_mat+(cocoon*(1.0+schoolclose2*(1.0-school_eff)+workhome*(1.0-work_eff))%contact_home.each_col())%(1.0-cocoon_mat);
+        arma::mat contacts = (1.0-cocoon)*cts+cocoon*cts%cocoon_mat+(cocoon*(1.0+schoolclose3*(1.0-school_eff)+workhome*(1.0-work_eff))%contact_home.each_col())%(1.0-cocoon_mat);
         double seas = 1.0+amp*cos(2.0*3.14*(t-(phi*365.25/12.0))/365.25);
         double importation = mean_imports*(1.0-trvban_eff);
         
