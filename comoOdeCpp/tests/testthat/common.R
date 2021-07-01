@@ -1,4 +1,4 @@
-CORE_FILE <- "/inc/covidage_v16.8.R"
+CORE_FILE <- "/inc/covidage_v19.1.R"
 
 load_libraries <- function() {
   library_list <- list(
@@ -22,12 +22,15 @@ init <- function(e) {
 }
 
 check_parameters_list_for_na <- function(parameters_list) {
+  no_na_found <- TRUE
   for (pp_name in names(parameters_list)) {
-    if (is.na(parameters_list[[pp_name]])) {
+    if (is.na(parameters_list[[pp_name]]) || is.nan(parameters_list[[pp_name]])) {
       print(paste0("parameters_list[\"", pp_name, "\"] = ", parameters_list[[pp_name]]), quote = FALSE)
       testthat::expect_equal(is.na(parameters_list[[pp_name]]), FALSE)
-      stop()
     }
+  }
+  if (!no_na_found) {
+    stop()
   }
 }
 
@@ -246,4 +249,95 @@ get_incidents <- function(
     #   parameters_dup["gamma"]*parameters_dup["sigmaEVR"]*mat_ode[,(EVRindex+1)]%*%ihr[,2]*parameters_dup["prob_icu_vr"]*(1-parameters_dup["reporth_ICU"])*parameters_dup["reporth_g"]+
     #   parameters_dup["gamma"]*parameters_dup["sigmaER"]*mat_ode[,(ERindex+1)]%*%ihr[,2]*parameters_dup["prob_icu_r"]*(1-parameters_dup["reporth_ICU"])*parameters_dup["reporth_g"]
     
+}
+
+
+get_incidents_v16_8 <- function(
+    parameters,
+    out_mat,
+    ihr_col,
+    times
+  ) {
+
+  spline_funs <- make_spline_funs(
+      give = parameters["give"],
+      beds_available = parameters["beds_available"],
+      icu_beds_available = parameters["icu_beds_available"],
+      ventilators_available = parameters["ventilators_available"]
+  )
+
+  incd_time_series <-
+    with(as.list(parameters, spline_funs), {
+
+      critH<-c()
+      crit<-c()
+      critV<-c()
+
+      for (t in 1:length(times)){
+        critH[t] <- min(1-fH((sum(out_mat[t,(Hindex+1)]))+sum(out_mat[t,(ICUCindex+1)])+sum(out_mat[t,(ICUCVindex+1)])),1)
+        crit[t]  <- min(1-fICU((sum(out_mat[t,(ICUindex+1)]))+(sum(out_mat[t,(Ventindex+1)]))+(sum(out_mat[t,(VentCindex+1)]))))
+        critV[t] <- min(1-fVent((sum(out_mat[t,(Ventindex+1)]))),1)
+      }
+
+
+      # daily incidence
+      incidence <-
+        report     * gamma * (1 - pclin)    * out_mat[, (Eindex+1)]   %*% (1 - ihr_col) +
+        reportc    * gamma * pclin          * out_mat[, (Eindex+1)]   %*% (1 - ihr_col) +
+        report     * gamma * (1 - pclin)    * out_mat[, (QEindex+1)]  %*% (1 - ihr_col) +
+        reportc    * gamma * pclin          * out_mat[, (QEindex+1)]  %*% (1 - ihr_col) +
+        report_v   * gamma * (1 - pclin_v)  * out_mat[, (EVindex+1)]  %*% (1 - sigmaEV * ihr_col) +
+        report_cv  * gamma * pclin_v        * out_mat[, (EVindex+1)]  %*% (1 - sigmaEV * ihr_col) +
+        report_vr  * gamma * (1 - pclin_vr) * out_mat[, (EVRindex+1)] %*% (1 - sigmaEVR * ihr_col) +
+        report_cvr * gamma * pclin_vr       * out_mat[, (EVRindex+1)] %*% (1 - sigmaEVR * ihr_col) +
+        report_r   * gamma * (1 - pclin_r)  * out_mat[, (ERindex+1)]  %*% (1 - sigmaER * ihr_col) +
+        report_cr  * gamma * pclin_r        * out_mat[, (ERindex+1)]  %*% (1 - sigmaER * ihr_col)
+      
+        # print("incidence:")
+        # print(incidence)
+
+      incidenceh <-
+        gamma * out_mat[, (Eindex+1)]  %*% ihr_col * (1 - critH) * (1 - prob_icu) * reporth +
+        gamma * out_mat[, (Eindex+1)]  %*% ihr_col * (1 - critH) * (1 - prob_icu) * (1 - reporth) * reporth_g +
+        gamma * out_mat[, (QEindex+1)] %*% ihr_col * (1 - critH) * (1 - prob_icu) * reporth +
+        gamma * out_mat[, (QEindex+1)] %*% ihr_col * (1 - critH) * (1 - prob_icu) * (1 - reporth) * reporth_g +
+        gamma * sigmaEV  * out_mat[, (EVindex+1)]  %*% ihr_col * (1 - critH) * (1 - prob_icu_v)  * reporth +
+        gamma * sigmaEVR * out_mat[, (EVRindex+1)] %*% ihr_col * (1 - critH) * (1 - prob_icu_vr) * reporth +
+        gamma * sigmaER  * out_mat[, (ERindex+1)]  %*% ihr_col * (1 - critH) * (1 - prob_icu_r)  * reporth +
+        gamma * out_mat[, (Eindex+1)]              %*% ihr_col * critH * reporth_g * (1 - prob_icu) +
+        gamma * out_mat[, (QEindex+1)]             %*% ihr_col * critH * reporth_g * (1 - prob_icu) +
+        gamma * sigmaEV  * out_mat[, (EVindex+1)]  %*% ihr_col * critH * reporth_g * (1 - prob_icu_v) +
+        gamma * sigmaEVR * out_mat[, (EVRindex+1)] %*% ihr_col * critH * reporth_g * (1 - prob_icu_vr) +
+        gamma * sigmaER  * out_mat[, (ERindex+1)]  %*% ihr_col * critH * reporth_g * (1 - prob_icu_r) +
+        gamma * out_mat[, (Eindex+1)]              %*% ihr_col * prob_icu * (1 - crit) * reporth_ICU +
+        gamma * out_mat[, (QEindex+1)]             %*% ihr_col * prob_icu * (1 - crit) * reporth_ICU +
+        gamma * out_mat[, (Eindex+1)]              %*% ihr_col * prob_icu * crit * reporth_ICU * reporth_g +
+        gamma * out_mat[, (QEindex+1)]             %*% ihr_col * prob_icu * crit * reporth_ICU * reporth_g +
+        gamma * sigmaEV  * out_mat[, (EVindex+1)]  %*% ihr_col * (1 - crit) * prob_icu_v * reporth_ICU +
+        gamma * sigmaEVR * out_mat[, (EVRindex+1)] %*% ihr_col * (1 - crit) * prob_icu_vr * reporth_ICU +
+        gamma * sigmaER  * out_mat[, (ERindex+1)]  %*% ihr_col * (1 - crit) * prob_icu_r * reporth_ICU +
+        gamma * sigmaEV  * out_mat[, (EVindex+1)]  %*% ihr_col * crit * prob_icu_v  * reporth_ICU * reporth_g +
+        gamma * sigmaEVR * out_mat[, (EVRindex+1)] %*% ihr_col * crit * prob_icu_vr * reporth_ICU * reporth_g +
+        gamma * sigmaER  * out_mat[, (ERindex+1)]  %*% ihr_col * crit * prob_icu_r  * reporth_ICU * reporth_g +
+        gamma * out_mat[, (Eindex+1)]              %*% ihr_col * prob_icu    * (1 - reporth_ICU) * reporth_g +
+        gamma * out_mat[, (QEindex+1)]             %*% ihr_col * prob_icu    * (1 - reporth_ICU) * reporth_g +
+        gamma * sigmaEV  * out_mat[, (EVindex+1)]  %*% ihr_col * prob_icu_v  * (1 - reporth_ICU) * reporth_g +
+        gamma * sigmaEVR * out_mat[, (EVRindex+1)] %*% ihr_col * prob_icu_vr * (1 - reporth_ICU) * reporth_g +
+        gamma * sigmaER  * out_mat[, (ERindex+1)]  %*% ihr_col * prob_icu_r  * (1 - reporth_ICU) * reporth_g
+
+      rowSums(incidence) + rowSums(incidenceh)
+
+      day_infections<- round(rowSums( gamma * out_mat[,(Eindex+1)] +
+                                      gamma * out_mat[,(QEindex+1)] +
+                                      gamma * out_mat[,(EVindex+1)] +
+                                      gamma * out_mat[,(EVRindex+1)] +
+                                      gamma * out_mat[,(ERindex+1)]
+                        ))
+
+      list("incd" = incidence, "incdh" = incidenceh, "day_inf" = day_infections)
+   
+    })
+
+  return(incd_time_series)
+
 }

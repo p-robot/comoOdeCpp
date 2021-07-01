@@ -1,4 +1,4 @@
-test_that("Walk-through (v16.8) of the model code", {
+test_that("Walk-through (v19.1) of the model code", {
   # skip("temp skip")
 
   rm(list = ls())
@@ -6,7 +6,7 @@ test_that("Walk-through (v16.8) of the model code", {
   init(e = environment())
 
   # file_path <- paste0(getwd(), "/data/templates_v16.8/Template_CoMoCOVID-19App_v17_all_interventions.xlsx")
-  file_path <- paste0(getwd(), "/data/templates_v16.8/Template_CoMoCOVID-19App_v17_school_closure.xlsx")
+  file_path <- paste0(getwd(), "/data/templates_v19.1/Template_CoMoCOVID-19App_v19_all_interventions.xlsx")
 
   if (!exists("inputs", mode = "function")) {
     source(paste0(getwd(), CORE_FILE), local = environment())
@@ -15,6 +15,7 @@ test_that("Walk-through (v16.8) of the model code", {
   #   source(paste0(getwd(), "/v16.4.core.mod.16.6.R"), local = environment())
   #   # print("after source")
   }
+  # print("done sourcing")
 
   # stop()
 
@@ -101,8 +102,8 @@ test_that("Walk-through (v16.8) of the model code", {
         # print(elapsed_time)
 
         processed_r_results <- process_ode_outcome(out_r, ss, param_vector)
-        print("processed_r_results$total_reported_deaths_end:")
-        print(processed_r_results$total_reported_deaths_end)
+        # print("processed_r_results$total_reported_deaths_end:")
+        # print(processed_r_results$total_reported_deaths_end)
 
 
       }

@@ -374,49 +374,55 @@ List covidOdeCpp(
 // duration_a += high_resolution_clock::now()-start_a;
 // auto start_b = high_resolution_clock::now();
 
-  arma::vec S = y.subvec(0,A-1);
-  arma::vec E = y.subvec(A,2*A-1);
-  arma::vec I = y.subvec(2*A,3*A-1);
-  arma::vec R = y.subvec(3*A,4*A-1);
-  arma::vec X = y.subvec(4*A,5*A-1);
-  arma::vec H = y.subvec(5*A,6*A-1);
-  arma::vec HC = y.subvec(6*A,7*A-1);
-  arma::vec C = y.subvec(7*A,8*A-1);
-  arma::vec CM = y.subvec(8*A,9*A-1);
-  arma::vec V = y.subvec(9*A,10*A-1);
-  arma::vec QS = y.subvec(10*A,11*A-1);
-  arma::vec QE = y.subvec(11*A,12*A-1);
-  arma::vec QI = y.subvec(12*A,13*A-1);
-  arma::vec QR = y.subvec(13*A,14*A-1);
-  arma::vec CL = y.subvec(14*A,15*A-1);
-  arma::vec QC = y.subvec(15*A,16*A-1);
-  arma::vec ICU = y.subvec(16*A,17*A-1);
-  arma::vec ICUC = y.subvec(17*A,18*A-1);
-  arma::vec ICUCV = y.subvec(18*A,19*A-1);
-  arma::vec Vent = y.subvec(19*A,20*A-1);
-  arma::vec VentC = y.subvec(20*A,21*A-1);
-  arma::vec CMC = y.subvec(21*A,22*A-1);
-  arma::vec Z = y.subvec(22*A,23*A-1);
-
-  arma::vec EV  = y.subvec(23*A,24*A-1);
-  arma::vec ER  = y.subvec(24*A,25*A-1);
-  arma::vec EVR = y.subvec(25*A,26*A-1);
-  arma::vec VR  = y.subvec(26*A,27*A-1);
-  arma::vec QV  = y.subvec(27*A,28*A-1);
-  arma::vec QEV = y.subvec(28*A,29*A-1);
-  arma::vec QEVR= y.subvec(29*A,30*A-1);
-  arma::vec QER = y.subvec(30*A,31*A-1);
-  arma::vec QVR = y.subvec(31*A,32*A-1);
-  arma::vec HCICU = y.subvec(32*A,33*A-1);
-  arma::vec HCV = y.subvec(33*A,34*A-1);
-  arma::vec Ab = y.subvec(34*A,35*A-1);
+  int ii = 0;
+  arma::vec S = y.subvec(ii*A,(ii+1)*A-1); ii++;
+  arma::vec SR = y.subvec(ii*A,(ii+1)*A-1); ii++;
+  arma::vec E = y.subvec(ii*A,(ii+1)*A-1); ii++;
+  arma::vec I = y.subvec(ii*A,(ii+1)*A-1); ii++;
+  arma::vec R = y.subvec(ii*A,(ii+1)*A-1); ii++;
+  arma::vec X = y.subvec(ii*A,(ii+1)*A-1); ii++;
+  arma::vec H = y.subvec(ii*A,(ii+1)*A-1); ii++;
+  arma::vec HC = y.subvec(ii*A,(ii+1)*A-1); ii++;
+  arma::vec C = y.subvec(ii*A,(ii+1)*A-1); ii++;
+  arma::vec CM = y.subvec(ii*A,(ii+1)*A-1); ii++;
+  arma::vec V = y.subvec(ii*A,(ii+1)*A-1); ii++;
+  arma::vec QS = y.subvec(ii*A,(ii+1)*A-1); ii++;
+  arma::vec QSR = y.subvec(ii*A,(ii+1)*A-1); ii++;
+  arma::vec QE = y.subvec(ii*A,(ii+1)*A-1); ii++;
+  arma::vec QI = y.subvec(ii*A,(ii+1)*A-1); ii++;
+  arma::vec QR = y.subvec(ii*A,(ii+1)*A-1); ii++;
+  arma::vec CL = y.subvec(ii*A,(ii+1)*A-1); ii++;
+  arma::vec QC = y.subvec(ii*A,(ii+1)*A-1); ii++;
+  arma::vec ICU = y.subvec(ii*A,(ii+1)*A-1); ii++;
+  arma::vec ICUC = y.subvec(ii*A,(ii+1)*A-1); ii++;
+  arma::vec ICUCV = y.subvec(ii*A,(ii+1)*A-1); ii++;
+  arma::vec Vent = y.subvec(ii*A,(ii+1)*A-1); ii++;
+  arma::vec VentC = y.subvec(ii*A,(ii+1)*A-1); ii++;
+  arma::vec CMC = y.subvec(ii*A,(ii+1)*A-1); ii++;
+  arma::vec Z = y.subvec(ii*A,(ii+1)*A-1); ii++;
+  arma::vec EV  = y.subvec(ii*A,(ii+1)*A-1); ii++;
+  arma::vec ER  = y.subvec(ii*A,(ii+1)*A-1); ii++;
+  arma::vec EVR = y.subvec(ii*A,(ii+1)*A-1); ii++;
+  arma::vec VR  = y.subvec(ii*A,(ii+1)*A-1); ii++;
+  arma::vec QV  = y.subvec(ii*A,(ii+1)*A-1); ii++;
+  arma::vec QEV = y.subvec(ii*A,(ii+1)*A-1); ii++;
+  arma::vec QEVR= y.subvec(ii*A,(ii+1)*A-1); ii++;
+  arma::vec QER = y.subvec(ii*A,(ii+1)*A-1); ii++;
+  arma::vec QVR = y.subvec(ii*A,(ii+1)*A-1); ii++;
+  arma::vec HCICU = y.subvec(ii*A,(ii+1)*A-1); ii++;
+  arma::vec HCV = y.subvec(ii*A,(ii+1)*A-1); ii++;
+  arma::vec Ab = y.subvec(ii*A,(ii+1)*A-1); ii++;
   
+
   // Zindex<-(22*A+1):(23*A)
 
-  arma::vec P = (S+E+I+R+X+Z+V+H+HC+ICU+ICUC+ICUCV+Vent+VentC+EV+ER+EVR+VR+HCICU+HCV+
-                  QS+QE+QI+QR+CL+QC+QEV+QV+QER+QEVR+QVR);
+// Rcout << "cpp: ii: "<<ii<<"\n";
+// Rcout << "cpp: 1\n";
 
-  double Q = double((sum(QS)+sum(QE)+sum(QI)+sum(QC)+sum(QR)+sum(QV)+sum(QER)+sum(QEVR)+sum(QEV)+sum(QVR)))/double(sum(P));
+  arma::vec P = (S+SR+E+I+R+X+Z+V+H+HC+ICU+ICUC+ICUCV+Vent+VentC+EV+ER+EVR+VR+HCICU+HCV+
+                  QS+QSR+QE+QI+QR+CL+QC+QEV+QV+QER+QEVR+QVR);
+// Rcout << "cpp: 1.1\n";
+  double Q = double((sum(QS)+sum(QSR)+sum(QE)+sum(QI)+sum(QC)+sum(QR)+sum(QV)+sum(QER)+sum(QEVR)+sum(QEV)+sum(QVR)))/double(sum(P));
 // Rcout << "Q=" << Q << "\n";
   
 // Environment base = Environment("package:base");
@@ -518,6 +524,9 @@ List covidOdeCpp(
     // int lockdown_high = as<NumericVector>(input["lockdown_high"])[my_t];
     int masstesting = as<NumericVector>(input["masstesting"])[my_t];
     int dexamethasone = as<NumericVector>(input["dex"])[my_t];
+    int pmod = as<NumericVector>(input["pmod"])[my_t];
+    int dmod = as<NumericVector>(input["dmod"])[my_t];
+    int cmod = as<NumericVector>(input["cmod"])[my_t];
 
 
     double screen_eff = 0.0;
@@ -547,6 +556,7 @@ List covidOdeCpp(
     double work_cov =        (as<NumericVector>(input["wah_vector"])[my_t])/100.0;
     double travelban_eff =   (as<NumericVector>(input["tb_vector"])[my_t])/100.0;
     double vaccine_cov =     (as<NumericVector>(input["vc_vector"])[my_t])/100.0;
+    // vaccine_covp
     double quarantine_cov =  (as<NumericVector>(input["q_vector"])[my_t])/100.0;
     double tests_per_day =   (as<NumericVector>(input["mt_vector"])[my_t]);
     // double min_age_testing = floor((as<NumericVector>(input["minas_vector"])[my_t])/5.0 + 1.0);
@@ -554,8 +564,25 @@ List covidOdeCpp(
     // double min_age_vaccine = floor((as<NumericVector>(input["minav_vector"])[my_t])/5.0 + 1.0);
     // double max_age_vaccine = floor((as<NumericVector>(input["maxav_vector"])[my_t])/5.0 + 1.0);
     int vaccineage = as<NumericVector>(input["vaccineage"])[my_t];
+    // vaccineagep
     int testage = as<NumericVector>(input["testage"])[my_t];
 
+    double dmod_vector = as<NumericVector>(input["dmod_vector"])[my_t];
+    double pmod_vector = as<NumericVector>(input["pmod_vector"])[my_t];
+    double cmod_vector = as<NumericVector>(input["cmod_vector"])[my_t]/100.0;
+
+    double dm = 1.0;
+    double pm = 1.0;
+    double sig = sigmaR;
+    if (dmod) {
+      dm = dmod_vector;
+    }
+    if (pmod) {
+      pm = pmod_vector;
+    }
+    if (cmod) {
+      sig = cmod_vector;
+    }
 
 
 
@@ -582,7 +609,7 @@ List covidOdeCpp(
 
       // }
     }
-
+// Rcout << "cpp: 2\n";
     arma::vec age_testing_vector =  arma::vec(A, arma::fill::zeros);
     if (masstesting) {
       age_testing_vector = as<arma::vec>(age_group_vectors[testage-1]);
@@ -770,12 +797,12 @@ List covidOdeCpp(
 
         // std::cout << "std::max(hand,mask)=" << std::max(hand,mask) << "\n";
 
-        arma::vec lam = (1.0-std::max(hand,mask))*p*seas*(contacts*((rho*E+(I+CL+importation)+(1.0-selfis_eff)*(X+HHC)+rhos*(HH))/P))
-                      + (1.0-std::max(hand,mask))*p*seas*(1.0-quarantine*quarantine_eff_other)*(contact_other*((rho*QE+QI+QC+QEV+QEVR+QER)/P));
+        arma::vec lam = (1.0-std::max(hand,mask))*p*pm*seas*(contacts*((rho*E+(I+CL+importation)+(1.0-selfis_eff)*(X+HHC)+rhos*(HH))/P))
+                      + (1.0-std::max(hand,mask))*p*pm*seas*(1.0-quarantine*quarantine_eff_other)*(contact_other*((rho*QE+QI+QC+QEV+QEVR+QER)/P));
 
                 // # contacts under home quarantine
-        arma::vec lamq = (1.0-std::max(hand,mask))*p*seas*((1.0-quarantine_eff_home)*contact_home*(((1.0-selfis_eff)*(X+HHC+rho*QE+QI+QC+QEV+QEVR+QER))/P))
-                       + (1.0-std::max(hand,mask))*p*seas*(1.0-quarantine_eff_other)*(contact_other*((rho*E+(I+CL+importation)+(1.0-selfis_eff)*(X+HHC+rho*QE+QI+QC+QEV+QEVR+QER)+rhos*(HH))/P));
+        arma::vec lamq = (1.0-std::max(hand,mask))*p*pm*seas*((1.0-quarantine_eff_home)*contact_home*(((1.0-selfis_eff)*(X+HHC+rho*QE+QI+QC+QEV+QEVR+QER))/P))
+                       + (1.0-std::max(hand,mask))*p*pm*seas*(1.0-quarantine_eff_other)*(contact_other*((rho*E+(I+CL+importation)+(1.0-selfis_eff)*(X+HHC+rho*QE+QI+QC+QEV+QEVR+QER)+rhos*(HH))/P));
         
         // if (t < 0.4){
         // // Rcout << std::setprecision(15) << "lam:" << lam << "lam[0]:" << lam[0] << "\n";
@@ -789,10 +816,11 @@ List covidOdeCpp(
         arma::vec birth = 0.0*popbirth_col2;
         birth(0) = b1;
 
+      // Rcout << "cpp: before ODE sys\n";
+
       //# ODE system
       arma::vec dSdt = -S%lam
                       - vaccinate*age_vaccine_vector%S
-                      + omega*R
                       + vac_dur*V
                       + ageing*S
                       - mort_col%S
@@ -801,7 +829,16 @@ List covidOdeCpp(
                       + (1.0/quarantine_days)*QS
                       ;
 
+      arma::vec dSRdt = -SR%lam
+                      + omega*R
+                      - quarantine_rate*SR
+                      + (1.0/quarantine_days)*QSR
+                      + ageing*SR
+                      - mort_col%SR
+                      ;
+
       arma::vec dEdt = S%lam
+                      + SR%lam
                       - gamma*E
                       + ageing*E
                       - vaccinate*age_vaccine_vector%E
@@ -834,31 +871,31 @@ List covidOdeCpp(
                         ;
 
       arma::vec dRdt = nui*I
-                        - omega*R
                         + nui*X
                         + nui*CL
                         + ageing*R
                         - mort_col%R
                         + (1.0/isolation_days)*Z
                         + (1.0/quarantine_days)*QR
-                        + nus*propo2*(1.0-dexo2*pdeath_ho)*ifr_col2%H
-                        + nus*(1.0-propo2)*(1.0-pdeath_h)*ifr_col2%H
-                        + nusc*propo2*(1.0-pdeath_hco)*ifr_col2%HC
-                        + nusc*(1.0-propo2)*(1.0-pdeath_hc)*ifr_col2%HC
-                        + nu_icu*propo2*(1.0-dexo2*pdeath_icuo)*ifr_col2%ICU
-                        + nu_icu*(1.0-propo2)*(1.0-pdeath_icu)*ifr_col2%ICU
-                        + nu_icuc*propo2*(1.0-dexo2c*pdeath_icuco)*ifr_col2%ICUC
-                        + nu_icuc*(1.0-propo2)*(1.0-pdeath_icuc)*ifr_col2%ICUC
-                        + nu_vent*(1.0-dexv*pdeath_vent)*ifr_col2%Vent
-                        + nu_ventc*(1.0-dexvc*pdeath_ventc)*ifr_col2%VentC
-                        + nu_ventc*(1.0-dexvc*pdeath_ventc)*ifr_col2%ICUCV
+                        + nus*propo2*(1.0-dexo2*pdeath_ho*dm)*ifr_col2%H
+                        + nus*(1.0-propo2)*(1.0-pdeath_h*dm)*ifr_col2%H
+                        + nusc*propo2*(1.0-pdeath_hco*dm)*ifr_col2%HC
+                        + nusc*(1.0-propo2)*(1.0-pdeath_hc*dm)*ifr_col2%HC
+                        + nusc*propo2*(1.0-pdeath_icu_hco*dm)*ifr_col2%HCICU
+                        + nusc*(1.0-propo2)*(1.0-pdeath_icu_hc*dm)*ifr_col2%HCICU
+                        + nu_icu*propo2*(1.0-dexo2*pdeath_icuo*dm)*ifr_col2%ICU
+                        + nu_icu*(1.0-propo2)*(1.0-pdeath_icu*dm)*ifr_col2%ICU
+                        + nu_icuc*propo2*(1.0-dexo2c*pdeath_icuco*dm)*ifr_col2%ICUC
+                        + nu_icuc*(1.0-propo2)*(1.0-pdeath_icuc*dm)*ifr_col2%ICUC
+                        + nu_vent*(1.0-dexv*pdeath_vent*dm)*ifr_col2%Vent
+                        + nu_ventc*(1.0-pdeath_vent_hc*dm)*ifr_col2%HCV
+                        + nu_ventc*(1.0-dexvc*pdeath_ventc*dm)*ifr_col2%VentC
+                        + nu_ventc*(1.0-dexvc*pdeath_ventc*dm)*ifr_col2%ICUCV
                         + vac_dur_r*VR
+                        - omega*R
                         - vaccinate*age_vaccine_vector%R
-                        - lam*sigmaR%R
-                        - quarantine_rate*R
-                        + nusc*propo2*(1.0-pdeath_icu_hco)*ifr_col2%HCICU
-                        + nusc*(1.0-propo2)*(1.0-pdeath_icu_hc)*ifr_col2%HCICU
-                        + nu_ventc*(1.0-pdeath_vent_hc)*ifr_col2%HCV
+                        - lam*sig%R
+                        - quarantine_rate*R                        
                         ;
 
       arma::vec dXdt = (gamma*selfis*(1.0-age_testing_vector*ratetestE)*pclin%(1.0-ihr_col2))%E
@@ -889,7 +926,7 @@ List covidOdeCpp(
                         - quarantine_rate*EV
                         + (1.0/quarantine_days)*QEV
                         ;
-      arma::vec dERdt = lam*sigmaR%R
+      arma::vec dERdt = lam*sig%R
                         - gamma*ER
                         + ageing*ER
                         - mort_col%ER
@@ -917,7 +954,18 @@ List covidOdeCpp(
 
       arma::vec dQSdt = quarantine_rate*S+ ageing*QS-mort_col%QS - (1.0/quarantine_days)*QS - lamq%QS;
 
-      arma::vec dQEdt = quarantine_rate*E - gamma*QE + ageing*QE-mort_col%QE - (1.0/quarantine_days)*QE + lamq%QS; 
+
+      arma::vec dQEdt = quarantine_rate*E - gamma*QE + ageing*QE-mort_col%QE - (1.0/quarantine_days)*QE
+                        + lamq%QS
+                        + lamq%QSR
+                        ; 
+
+      arma::vec dQSRdt = quarantine_rate*SR + ageing*QSR - mort_col%QSR - (1.0/quarantine_days)*QSR
+                        - lamq%QSR
+                        ;
+                        
+
+
 
       arma::vec dQIdt = quarantine_rate*I
                         + (gamma*(1.0-ihr_col2)*(1.0-pclin))%QE
@@ -1140,21 +1188,21 @@ List covidOdeCpp(
                       ;
       
       arma::vec dCMdt = 
-                        nus*propo2*dexo2*pdeath_ho*ifr_col2%H
-                        + nus*(1.0-propo2)*pdeath_h*ifr_col2%H
-                        + nusc*report_death_HC     *propo2 *pdeath_hco*ifr_col2%HC
-                        + nusc*report_death_HC*(1.0-propo2)*pdeath_hc *ifr_col2%HC
-                        + nu_icu*propo2*dexo2*pdeath_icuo*ifr_col2%ICU
-                        + nu_icu*(1.0-propo2)*pdeath_icu*ifr_col2%ICU
-                        + nu_icuc*propo2*dexo2c*pdeath_icuco*ifr_col2%ICUC
-                        + nu_icuc*(1.0-propo2)*pdeath_icuc*ifr_col2%ICUC
-                        + nu_vent*dexv*pdeath_vent*ifr_col2%Vent
-                        + nu_ventc*dexvc*pdeath_ventc*ifr_col2%VentC
-                        + nu_ventc*dexvc*pdeath_ventc*ifr_col2%ICUCV
+                        nus*propo2*dexo2*pdeath_ho*dm*ifr_col2%H
+                        + nus*(1.0-propo2)*pdeath_h*dm*ifr_col2%H
+                        + nusc*report_death_HC     *propo2 *pdeath_hco*dm*ifr_col2%HC
+                        + nusc*report_death_HC*(1.0-propo2)*pdeath_hc *dm*ifr_col2%HC
+                        + nu_icu*propo2*dexo2*pdeath_icuo*dm*ifr_col2%ICU
+                        + nu_icu*(1.0-propo2)*pdeath_icu*dm*ifr_col2%ICU
+                        + nu_icuc*propo2*dexo2c*pdeath_icuco*dm*ifr_col2%ICUC
+                        + nu_icuc*(1.0-propo2)*pdeath_icuc*dm*ifr_col2%ICUC
+                        + nu_vent*dexv*pdeath_vent*dm*ifr_col2%Vent
+                        + nu_ventc*dexvc*pdeath_ventc*dm*ifr_col2%VentC
+                        + nu_ventc*dexvc*pdeath_ventc*dm*ifr_col2%ICUCV
                         
-                        + nu_ventc*report_death_HC*pdeath_vent_hc*ifr_col2%HCV
-                        + nusc *report_death_HC*propo2      *pdeath_icu_hco*ifr_col2%HCICU
-                        + nusc *report_death_HC*(1.0-propo2)*pdeath_icu_hc *ifr_col2%HCICU // all above are attributable deaths
+                        + nu_ventc*report_death_HC*pdeath_vent_hc*dm*ifr_col2%HCV
+                        + nusc *report_death_HC*propo2      *pdeath_icu_hco*dm*ifr_col2%HCICU
+                        + nusc *report_death_HC*(1.0-propo2)*pdeath_icu_hc *dm*ifr_col2%HCICU // all above are attributable deaths
 
                         + mort_col%H
                         + mort_col%ICU
@@ -1190,12 +1238,12 @@ List covidOdeCpp(
 //mort_col%(not reportable) darker grey, S, E, QS, QE, R, QR, V
 
 
-      arma::vec dCMCdt = nusc*propo2*pdeath_hco*ifr_col2%HC
-                          + nusc*(1.0-propo2)*pdeath_hc*ifr_col2%HC
-                          + nu_icuc*propo2*dexo2c*pdeath_icuco*ifr_col2%ICUC
-                          + nu_icuc*(1.0-propo2)*pdeath_icuc*ifr_col2%ICUC
-                          + nu_ventc*dexvc*pdeath_ventc*ifr_col2%VentC
-                          + nu_ventc*dexvc*pdeath_ventc*ifr_col2%ICUCV
+      arma::vec dCMCdt = nusc*propo2*pdeath_hco*dm*ifr_col2%HC
+                          + nusc*(1.0-propo2)*pdeath_hc*dm*ifr_col2%HC
+                          + nu_icuc*propo2*dexo2c*pdeath_icuco*dm*ifr_col2%ICUC
+                          + nu_icuc*(1.0-propo2)*pdeath_icuc*dm*ifr_col2%ICUC
+                          + nu_ventc*dexvc*pdeath_ventc*dm*ifr_col2%VentC
+                          + nu_ventc*dexvc*pdeath_ventc*dm*ifr_col2%ICUCV
                           + mort_col%HC + mort_col%ICUC + mort_col%VentC + mort_col%ICUCV
                           ;
 
@@ -1216,20 +1264,20 @@ List covidOdeCpp(
       arma::vec dAbdt = nui*I
                       + nui*X
                       + nui*CL 
-                      + nus*      propo2 *(1.0-dexo2*pdeath_ho)*ifr_col2%H
-                      + nus*(1.0- propo2)*(1.0-pdeath_h)       *ifr_col2%H
-                      + nusc*     propo2 *(1.0-pdeath_hco)    *ifr_col2%HC
-                      + nusc*(1.0-propo2)*(1.0-pdeath_hc )    *ifr_col2%HC  
-                      + nusc*     propo2 *(1.0-pdeath_icu_hco)*ifr_col2%HCICU
-                      + nusc*(1.0-propo2)*(1.0-pdeath_icu_hc )*ifr_col2%HCICU
-                      + nu_ventc         *(1.0-pdeath_vent_hc)*ifr_col2%HCV
-                      + nu_icu*   propo2 *(1.0-dexo2*pdeath_icuo)   *ifr_col2%ICU
-                      + nu_icu*(1.0-propo2)*(1.0-pdeath_icu)        *ifr_col2%ICU
-                      + nu_icuc*   propo2 *(1.0-dexo2c*pdeath_icuco)*ifr_col2%ICUC
-                      + nu_icuc*(1.0-propo2)*(1.0-pdeath_icuc)      *ifr_col2%ICUC
-                      + nu_vent* (1.0-dexv *pdeath_vent) *ifr_col2%Vent
-                      + nu_ventc*(1.0-dexvc*pdeath_ventc)*ifr_col2%VentC
-                      + nu_ventc*(1.0-dexvc*pdeath_ventc)*ifr_col2%ICUCV
+                      + nus*      propo2 *(1.0-dexo2*pdeath_ho*dm)*ifr_col2%H
+                      + nus*(1.0- propo2)*(1.0-pdeath_h*dm)       *ifr_col2%H
+                      + nusc*     propo2 *(1.0-pdeath_hco*dm)     *ifr_col2%HC
+                      + nusc*(1.0-propo2)*(1.0-pdeath_hc*dm)      *ifr_col2%HC  
+                      + nusc*     propo2 *(1.0-pdeath_icu_hco*dm) *ifr_col2%HCICU
+                      + nusc*(1.0-propo2)*(1.0-pdeath_icu_hc*dm)  *ifr_col2%HCICU
+                      + nu_ventc         *(1.0-pdeath_vent_hc*dm) *ifr_col2%HCV
+                      + nu_icu*   propo2 *(1.0-dexo2*pdeath_icuo*dm)   *ifr_col2%ICU
+                      + nu_icu*(1.0-propo2)*(1.0-pdeath_icu*dm)        *ifr_col2%ICU
+                      + nu_icuc*   propo2 *(1.0-dexo2c*pdeath_icuco*dm)*ifr_col2%ICUC
+                      + nu_icuc*(1.0-propo2)*(1.0-pdeath_icuc*dm)      *ifr_col2%ICUC
+                      + nu_vent* (1.0-dexv *pdeath_vent*dm) *ifr_col2%Vent
+                      + nu_ventc*(1.0-dexvc*pdeath_ventc*dm)*ifr_col2%VentC
+                      + nu_ventc*(1.0-dexvc*pdeath_ventc*dm)*ifr_col2%ICUCV
                       - seroneg*Ab
                       - mort_col%Ab
                       + ageing*Ab
@@ -1238,6 +1286,7 @@ List covidOdeCpp(
 //--------------------------
 
   arma::vec outvec = dSdt;
+  outvec = arma::join_cols(outvec,dSRdt);
   outvec = arma::join_cols(outvec,dEdt);
   outvec = arma::join_cols(outvec,dIdt);
   outvec = arma::join_cols(outvec,dRdt);
@@ -1248,6 +1297,7 @@ List covidOdeCpp(
   outvec = arma::join_cols(outvec,dCMdt);
   outvec = arma::join_cols(outvec,dVdt);
   outvec = arma::join_cols(outvec,dQSdt);
+  outvec = arma::join_cols(outvec,dQSRdt);
   outvec = arma::join_cols(outvec,dQEdt);
   outvec = arma::join_cols(outvec,dQIdt);
   outvec = arma::join_cols(outvec,dQRdt);
