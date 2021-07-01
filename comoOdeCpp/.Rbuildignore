@@ -5,6 +5,7 @@
 ^.*\.csv
 ^.+\.~.+\.csv$
 ^tests/testthat/test-sensitivity_nh\.R$
+^tests/testthat/test-fit\.R$
 ^tests/testthat/notes\.R$
 ^tests/testthat/_archived$
 ^tests/testthat/data/_archived$
@@ -13,3 +14,4 @@
 ^tests/testthat/data/fit_result_egypt\.R$
 ^tests/testthat/out_sa_nh$
 ^tests/testthat/data/templates_v16\.8/nh$
+^tests/testthat/inc/buildignore$

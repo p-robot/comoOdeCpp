@@ -9,10 +9,13 @@
 
 
 This package implements CoMo Consortium's COVID-19 transmission model in Rcpp.
-comoOdeCpp is designed to work with [CoMo COVID-19 app](https://github.com/bogaotory/como) 
+comoOdeCpp is designed to work with [CoMo COVID-19 app](https://github.com/ocelhay/como) 
 
 
-by Ricardo Aguas, Sompob Saralamba, Bo Gao
+by Ricardo Aguas (R version), Bo Gao (Rcpp version), and Sompob Saralamba (early Rcpp version)
+
+
+[Bo Gao](https://github.com/bogaotory) currently maintains this repository
 
 
 ## Install
