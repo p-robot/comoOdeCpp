@@ -68,14 +68,14 @@ test_that("Splitting intervention", {
 })
 
 test_that("Matching Rcpp and R version at p={0.00,0.01, ... 0.1}", {
-  skip("temp skip")
+  # skip("temp skip")
 
   rm(list = ls())
   source(paste0(getwd(), "/common.R"), local = environment())
   init(e = environment())
 
   # file_path <- paste0(getwd(), "/data/templates_v16.8/Template_CoMoCOVID-19App_v17_r_v_cpp.xlsx")
-  file_path <- paste0(getwd(), "/data/templates_v19.1/Template_CoMoCOVID-19App_v19_r_v_cpp.xlsx")
+  file_path <- paste0(getwd(), "/data/templates_v19.1.1/Template_CoMoCOVID-19App_v19_r_v_cpp.xlsx")
 
   if (!exists("inputs", mode = "function")) {
     source(paste0(getwd(), CORE_FILE), local = environment())
@@ -128,14 +128,13 @@ test_that("Matching Rcpp and R version at p={0.00,0.01, ... 0.1}", {
       )
       expect_equal(output_message, "covidOdeCpp: splinefuns updated")
 
-      processed_cpp_results <- process_ode_outcome(out_cpp, ss, param_vector)
+      processed_cpp_results <- multi_runs_pp_only(
+            out0 = out_cpp, times = times, parameters = param_vector, input = ss
+          )
 
-      # expect_equal(
-      #   processed_cpp_results$total_reportable_deaths_end,
-      #   processed_cpp_results$total_cm_deaths_end,
-      #   tolerance = 0.1,
-      #   scale = processed_cpp_results$total_cm_deaths_end
-      # )
+      processed_cpp_results <- process_ode_outcome(
+            out = processed_cpp_results, intv_vector = ss, param_used = param_vector
+          )
 
       # stop()
 
@@ -146,14 +145,13 @@ test_that("Matching Rcpp and R version at p={0.00,0.01, ... 0.1}", {
                   )
       )
 
-      processed_r_results <- process_ode_outcome(out_r, ss, param_vector)
+      processed_r_results <- multi_runs_pp_only(
+            out0 = out_r, times = times, parameters = param_vector, input = ss
+          )
 
-      # expect_equal(
-      #   processed_r_results$total_reportable_deaths_end,
-      #   processed_r_results$total_cm_deaths_end,
-      #   tolerance = 0.1,
-      #   scale = processed_r_results$total_cm_deaths_end
-      # )
+      processed_r_results <- process_ode_outcome(
+            out = processed_r_results, intv_vector = ss, param_used = param_vector
+          )
 
       match_processed_outputs(
           output_a = processed_cpp_results,
