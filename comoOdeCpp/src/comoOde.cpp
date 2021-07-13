@@ -569,11 +569,12 @@ List covidOdeCpp(
 
     double dmod_vector = as<NumericVector>(input["dmod_vector"])[my_t];
     double pmod_vector = as<NumericVector>(input["pmod_vector"])[my_t];
-    double cmod_vector = as<NumericVector>(input["cmod_vector"])[my_t]/100.0;
+    double cmod_vector = as<NumericVector>(input["cmod_vector"])[my_t];
 
     double dm = 1.0;
     double pm = 1.0;
-    double sig = sigmaR;
+    double cm = 1.0;
+    // double sig = sigmaR;
     if (dmod) {
       dm = dmod_vector;
     }
@@ -581,7 +582,7 @@ List covidOdeCpp(
       pm = pmod_vector;
     }
     if (cmod) {
-      sig = cmod_vector;
+      cm = cmod_vector;
     }
 
 
@@ -894,7 +895,7 @@ List covidOdeCpp(
                         + vac_dur_r*VR
                         - omega*R
                         - vaccinate*age_vaccine_vector%R
-                        - lam*sig%R
+                        - lam*sigmaR*cm%R
                         - quarantine_rate*R                        
                         ;
 
@@ -926,7 +927,7 @@ List covidOdeCpp(
                         - quarantine_rate*EV
                         + (1.0/quarantine_days)*QEV
                         ;
-      arma::vec dERdt = lam*sig%R
+      arma::vec dERdt = lam*sigmaR*cm%R
                         - gamma*ER
                         + ageing*ER
                         - mort_col%ER
@@ -996,6 +997,7 @@ List covidOdeCpp(
                       + ageing*QR
                       - mort_col%QR
                       - (1.0/quarantine_days)*QR
+                      - sigmaR*cm*lamq%QR
                       + quarantine_rate*R
                       + vac_dur_r*QVR
                       ;
@@ -1021,7 +1023,7 @@ List covidOdeCpp(
                         + ageing*QER
                         - mort_col%QER
                         - (1.0/quarantine_days)*QER
-                        + sigmaR*lamq%QR 
+                        + sigmaR*cm*lamq%QR 
                         ;
 
       arma::vec dQVRdt = quarantine_rate*VR
