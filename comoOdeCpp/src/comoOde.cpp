@@ -133,8 +133,6 @@ List covidOdeCpp(
         double reporth = parameters["reporth"];
         double amp = parameters["amp"];
 
-        // 
-
         // static double p = 0.0;
         static double rho = 0.0;
         static double omega = 0.0;
@@ -430,6 +428,15 @@ List covidOdeCpp(
 //   }
 // }
 
+if( parameters["new_variant_p_multiplier"] ){
+    if( t > parameters["date_range_variant_start"] ){
+      
+        static double new_variant_p_multiplier = 0.0;
+        new_variant_p_multiplier = parameters["new_variant_p_multiplier"];
+
+        p = p*new_variant_p_multiplier;
+    }
+}
 
 // duration_b += high_resolution_clock::now()-start_b;
 // auto start_c = high_resolution_clock::now();
