@@ -1847,12 +1847,18 @@ Y<-c(initS,initSR,initE,initI,initR,initX,initH,initHC,initC,initCM,initV, initQ
 #   out_max<-out$max
 #   out_mean<-out$mean
 
-process_ode_outcome <- function(out_mean, intv_vector, param_used, iterations = 1){
-  out_min<-out_mean
-  out_max<-out_mean
-  # out_mean<-out$mean
-  parameters <- param_used
+# process_ode_outcome <- function(out_mean, intv_vector, param_used, iterations = 1){
+#   out_min<-out_mean
+#   out_max<-out_mean
+#   # out_mean<-out$mean
+#   parameters <- param_used
   
+process_ode_outcome <- function(out, intv_vector, param_used, iterations = 1){
+  out_min<-out$min
+  out_max<-out$max
+  out_mean<-out$mean
+  
+  parameters <- param_used
   
   critH<-c()
   crit<-c()
@@ -2305,9 +2311,10 @@ process_ode_outcome <- function(out_mean, intv_vector, param_used, iterations = 
 
 
 
-multi_runs<-function(Y,times,parameters,input,iterations,noise,confidence,fit,fit_mat){
+# multi_runs<-function(Y,times,parameters,input,iterations,noise,confidence,fit,fit_mat){
+multi_runs_pp_only <- function(out0, times, parameters, input, iterations = 1){
   results <- list()
-  aux<-array(0, dim=c(length(times),37*A+1,iterations))
+  # aux<-array(0, dim=c(length(times),37*A+1,iterations))
   results$mean<-matrix(0,nrow = length(times),ncol = 37*A+1)
   results$min<-matrix(0,nrow = length(times),ncol = 37*A+1)
   results$max<-matrix(0,nrow = length(times),ncol = 37*A+1)
@@ -2323,133 +2330,133 @@ multi_runs<-function(Y,times,parameters,input,iterations,noise,confidence,fit,fi
   results$mean_ab<-matrix(0,nrow = length(times),ncol = 1)
   results$min_ab<-matrix(0,nrow = length(times),ncol = 1)
   results$max_ab<-matrix(0,nrow = length(times),ncol = 1)
-  cases<-matrix(0, nrow=length(times),ncol=iterations)
-  cum_cases<-matrix(0, nrow=length(times),ncol=iterations)
-  day_infections<-matrix(0, nrow=length(times),ncol=iterations)
-  Rt_aux<-matrix(0, nrow=length(times),ncol=iterations)
-  infections<-matrix(0, nrow=iterations,ncol=1)
+  # cases<-matrix(0, nrow=length(times),ncol=iterations)
+  # cum_cases<-matrix(0, nrow=length(times),ncol=iterations)
+  # day_infections<-matrix(0, nrow=length(times),ncol=iterations)
+  # Rt_aux<-matrix(0, nrow=length(times),ncol=iterations)
+  # infections<-matrix(0, nrow=iterations,ncol=1)
   Rt <- NULL
-  print(iterations)
+  # print(iterations)
   
   param_vector<-parameters
-  if(iterations>1){
-    for (i in 1:iterations){
-      print(i)
-      param_vector[parameters_noise]<-parameters[parameters_noise]+rnorm(length(parameters_noise),mean=0,sd=noise*abs(parameters[parameters_noise]))
-      if(fit){
-        param_vector[parameters_fit]<-fit_mat[,floor(runif(1)*(length(fit_mat[1,])-1))+1]
-        initE[aci]<-round(sum(popstruc[,2])/param_vector["init"])    
-        initS<-popstruc[,2]-initSR-initE-initI-initCL-initR-initX-initZ-initV-initH-initHC-initICU-initICUC-initICUCV-initVent-initVentC-
-          initQS-initQSR-initQE-initQI-initQR-initQC-initEV-initER-initEVR-initVR-initQV-initQEV-initQEVR-initQER-initQVR-
-          initHCICU-initHCV 
-        Y<-c(initS,initSR,initE,initI,initR,initX,initH,initHC,initC,initCM,initV, initQS,initQSR,initQE, initQI, initQR, initCL, initQC, initICU, 
-             initICUC, initICUCV, initVent, initVentC, initCMC,initZ, initEV, initER, initEVR, initVR, 
-             initQV,initQEV,initQEVR,initQER,initQVR,initHCICU,initHCV,initAb)
-      }
-      out0 <- ode(y = Y, times = times, method = "euler", hini = 0.05, func = covid, parms = param_vector, input=input)
-      aux[,,i]<-out0
+  # if(iterations>1){
+  #   for (i in 1:iterations){
+  #     print(i)
+  #     param_vector[parameters_noise]<-parameters[parameters_noise]+rnorm(length(parameters_noise),mean=0,sd=noise*abs(parameters[parameters_noise]))
+  #     if(fit){
+  #       param_vector[parameters_fit]<-fit_mat[,floor(runif(1)*(length(fit_mat[1,])-1))+1]
+  #       initE[aci]<-round(sum(popstruc[,2])/param_vector["init"])    
+  #       initS<-popstruc[,2]-initSR-initE-initI-initCL-initR-initX-initZ-initV-initH-initHC-initICU-initICUC-initICUCV-initVent-initVentC-
+  #         initQS-initQSR-initQE-initQI-initQR-initQC-initEV-initER-initEVR-initVR-initQV-initQEV-initQEVR-initQER-initQVR-
+  #         initHCICU-initHCV 
+  #       Y<-c(initS,initSR,initE,initI,initR,initX,initH,initHC,initC,initCM,initV, initQS,initQSR,initQE, initQI, initQR, initCL, initQC, initICU, 
+  #            initICUC, initICUCV, initVent, initVentC, initCMC,initZ, initEV, initER, initEVR, initVR, 
+  #            initQV,initQEV,initQEVR,initQER,initQVR,initHCICU,initHCV,initAb)
+  #     }
+  #     out0 <- ode(y = Y, times = times, method = "euler", hini = 0.05, func = covid, parms = param_vector, input=input)
+  #     aux[,,i]<-out0
       
-      critH<-c()
-      crit<-c()
-      critV<-c()
-      for (ii in 1:length(times)){
-        critH[ii]<-min(1-fH((sum(out0[ii,(Hindex+1)]))+sum(out0[ii,(ICUCindex+1)])+sum(out0[ii,(ICUCVindex+1)])),1)
-        crit[ii]<-min(1-fICU((sum(out0[ii,(ICUindex+1)]))+(sum(out0[ii,(Ventindex+1)]))+(sum(out0[ii,(VentCindex+1)]))),1)
-        critV[ii]<-min(1-fVent((sum(out0[ii,(Ventindex+1)]))),1)
-      }
+  #     critH<-c()
+  #     crit<-c()
+  #     critV<-c()
+  #     for (ii in 1:length(times)){
+  #       critH[ii]<-min(1-fH((sum(out0[ii,(Hindex+1)]))+sum(out0[ii,(ICUCindex+1)])+sum(out0[ii,(ICUCVindex+1)])),1)
+  #       crit[ii]<-min(1-fICU((sum(out0[ii,(ICUindex+1)]))+(sum(out0[ii,(Ventindex+1)]))+(sum(out0[ii,(VentCindex+1)]))),1)
+  #       critV[ii]<-min(1-fVent((sum(out0[ii,(Ventindex+1)]))),1)
+  #     }
       
-      # daily incidence
-      incidence<-param_vector["report"]*param_vector["gamma"]*(1-param_vector["pclin"])*out0[,(Eindex+1)]%*%(1-ihr[,2])+
-        param_vector["reportc"]*param_vector["gamma"]*param_vector["pclin"]*out0[,(Eindex+1)]%*%(1-ihr[,2])+
-        param_vector["report"]*param_vector["gamma"]*(1-param_vector["pclin"])*out0[,(QEindex+1)]%*%(1-ihr[,2])+
-        param_vector["reportc"]*param_vector["gamma"]*param_vector["pclin"]*out0[,(QEindex+1)]%*%(1-ihr[,2])+
-        param_vector["report_v"]*param_vector["gamma"]*(1-param_vector["pclin_v"])*out0[,(EVindex+1)]%*%(1-param_vector["sigmaEV"]*ihr[,2])+
-        param_vector["report_cv"]*param_vector["gamma"]*param_vector["pclin_v"]*out0[,(EVindex+1)]%*%(1-param_vector["sigmaEV"]*ihr[,2])+
-        param_vector["report_vr"]*param_vector["gamma"]*(1-param_vector["pclin_vr"])*out0[,(EVRindex+1)]%*%(1-param_vector["sigmaEVR"]*ihr[,2])+
-        param_vector["report_cvr"]*param_vector["gamma"]*param_vector["pclin_vr"]*out0[,(EVRindex+1)]%*%(1-param_vector["sigmaEVR"]*ihr[,2])+
-        param_vector["report_r"]*param_vector["gamma"]*(1-param_vector["pclin_r"])*out0[,(ERindex+1)]%*%(1-param_vector["sigmaER"]*ihr[,2])+
-        param_vector["report_cr"]*param_vector["gamma"]*param_vector["pclin_r"]*out0[,(ERindex+1)]%*%(1-param_vector["sigmaER"]*ihr[,2])
+  #     # daily incidence
+  #     incidence<-param_vector["report"]*param_vector["gamma"]*(1-param_vector["pclin"])*out0[,(Eindex+1)]%*%(1-ihr[,2])+
+  #       param_vector["reportc"]*param_vector["gamma"]*param_vector["pclin"]*out0[,(Eindex+1)]%*%(1-ihr[,2])+
+  #       param_vector["report"]*param_vector["gamma"]*(1-param_vector["pclin"])*out0[,(QEindex+1)]%*%(1-ihr[,2])+
+  #       param_vector["reportc"]*param_vector["gamma"]*param_vector["pclin"]*out0[,(QEindex+1)]%*%(1-ihr[,2])+
+  #       param_vector["report_v"]*param_vector["gamma"]*(1-param_vector["pclin_v"])*out0[,(EVindex+1)]%*%(1-param_vector["sigmaEV"]*ihr[,2])+
+  #       param_vector["report_cv"]*param_vector["gamma"]*param_vector["pclin_v"]*out0[,(EVindex+1)]%*%(1-param_vector["sigmaEV"]*ihr[,2])+
+  #       param_vector["report_vr"]*param_vector["gamma"]*(1-param_vector["pclin_vr"])*out0[,(EVRindex+1)]%*%(1-param_vector["sigmaEVR"]*ihr[,2])+
+  #       param_vector["report_cvr"]*param_vector["gamma"]*param_vector["pclin_vr"]*out0[,(EVRindex+1)]%*%(1-param_vector["sigmaEVR"]*ihr[,2])+
+  #       param_vector["report_r"]*param_vector["gamma"]*(1-param_vector["pclin_r"])*out0[,(ERindex+1)]%*%(1-param_vector["sigmaER"]*ihr[,2])+
+  #       param_vector["report_cr"]*param_vector["gamma"]*param_vector["pclin_r"]*out0[,(ERindex+1)]%*%(1-param_vector["sigmaER"]*ihr[,2])
       
-      incidenceh<- param_vector["gamma"]*out0[,(Eindex+1)]%*%ihr[,2]*(1-critH)*(1-param_vector["prob_icu"])*param_vector["reporth"]+
-        param_vector["gamma"]*out0[,(Eindex+1)]%*%ihr[,2]*(1-critH)*(1-param_vector["prob_icu"])*(1-param_vector["reporth"])*param_vector["reporth_g"]+
-        param_vector["gamma"]*out0[,(QEindex+1)]%*%ihr[,2]*(1-critH)*(1-param_vector["prob_icu"])*param_vector["reporth"]+
-        param_vector["gamma"]*out0[,(QEindex+1)]%*%ihr[,2]*(1-critH)*(1-param_vector["prob_icu"])*(1-param_vector["reporth"])*param_vector["reporth_g"]+
-        param_vector["gamma"]*param_vector["sigmaEV"]*out0[,(EVindex+1)]%*%ihr[,2]*(1-critH)*(1-param_vector["prob_icu_v"])*param_vector["reporth"]+
-        param_vector["gamma"]*param_vector["sigmaEVR"]*out0[,(EVRindex+1)]%*%ihr[,2]*(1-critH)*(1-param_vector["prob_icu_vr"])*param_vector["reporth"]+
-        param_vector["gamma"]*param_vector["sigmaER"]*out0[,(ERindex+1)]%*%ihr[,2]*(1-critH)*(1-param_vector["prob_icu_r"])*param_vector["reporth"]+
-        param_vector["gamma"]*out0[,(Eindex+1)]%*%ihr[,2]*critH*param_vector["reporth_g"]*(1-param_vector["prob_icu"])+
-        param_vector["gamma"]*out0[,(QEindex+1)]%*%ihr[,2]*critH*param_vector["reporth_g"]*(1-param_vector["prob_icu"])+
-        param_vector["gamma"]*param_vector["sigmaEV"]*out0[,(EVindex+1)]%*%ihr[,2]*critH*param_vector["reporth_g"]*(1-param_vector["prob_icu_v"])+
-        param_vector["gamma"]*param_vector["sigmaEVR"]*out0[,(EVRindex+1)]%*%ihr[,2]*critH*param_vector["reporth_g"]*(1-param_vector["prob_icu_vr"])+
-        param_vector["gamma"]*param_vector["sigmaER"]*out0[,(ERindex+1)]%*%ihr[,2]*critH*param_vector["reporth_g"]*(1-param_vector["prob_icu_r"])+
-        #ICU
-        param_vector["gamma"]*out0[,(Eindex+1)]%*%ihr[,2]*param_vector["prob_icu"]*(1-crit)*param_vector["reporth_ICU"]+
-        param_vector["gamma"]*out0[,(QEindex+1)]%*%ihr[,2]*param_vector["prob_icu"]*(1-crit)*param_vector["reporth_ICU"]+
-        param_vector["gamma"]*out0[,(Eindex+1)]%*%ihr[,2]*param_vector["prob_icu"]*crit*param_vector["reporth_ICU"]*param_vector["reporth_g"]+
-        param_vector["gamma"]*out0[,(QEindex+1)]%*%ihr[,2]*param_vector["prob_icu"]*crit*param_vector["reporth_ICU"]*param_vector["reporth_g"]+
-        param_vector["gamma"]*param_vector["sigmaEV"]*out0[,(EVindex+1)]%*%ihr[,2]*(1-crit)*param_vector["prob_icu_v"]*param_vector["reporth_ICU"]+
-        param_vector["gamma"]*param_vector["sigmaEVR"]*out0[,(EVRindex+1)]%*%ihr[,2]*(1-crit)*param_vector["prob_icu_vr"]*param_vector["reporth_ICU"]+
-        param_vector["gamma"]*param_vector["sigmaER"]*out0[,(ERindex+1)]%*%ihr[,2]*(1-crit)*param_vector["prob_icu_r"]*param_vector["reporth_ICU"]+
-        param_vector["gamma"]*param_vector["sigmaEV"]*out0[,(EVindex+1)]%*%ihr[,2]*crit*param_vector["prob_icu_v"]*param_vector["reporth_ICU"]*param_vector["reporth_g"]+
-        param_vector["gamma"]*param_vector["sigmaEVR"]*out0[,(EVRindex+1)]%*%ihr[,2]*crit*param_vector["prob_icu_vr"]*param_vector["reporth_ICU"]*param_vector["reporth_g"]+
-        param_vector["gamma"]*param_vector["sigmaER"]*out0[,(ERindex+1)]%*%ihr[,2]*crit*param_vector["prob_icu_r"]*param_vector["reporth_ICU"]*param_vector["reporth_g"]+
-        param_vector["gamma"]*out0[,(Eindex+1)]%*%ihr[,2]*param_vector["prob_icu"]*(1-param_vector["reporth_ICU"])*param_vector["reporth_g"]+
-        param_vector["gamma"]*out0[,(QEindex+1)]%*%ihr[,2]*param_vector["prob_icu"]*(1-param_vector["reporth_ICU"])*param_vector["reporth_g"]+
-        param_vector["gamma"]*param_vector["sigmaEV"]*out0[,(EVindex+1)]%*%ihr[,2]*param_vector["prob_icu_v"]*(1-param_vector["reporth_ICU"])*param_vector["reporth_g"]+
-        param_vector["gamma"]*param_vector["sigmaEVR"]*out0[,(EVRindex+1)]%*%ihr[,2]*param_vector["prob_icu_vr"]*(1-param_vector["reporth_ICU"])*param_vector["reporth_g"]+
-        param_vector["gamma"]*param_vector["sigmaER"]*out0[,(ERindex+1)]%*%ihr[,2]*param_vector["prob_icu_r"]*(1-param_vector["reporth_ICU"])*param_vector["reporth_g"]
+  #     incidenceh<- param_vector["gamma"]*out0[,(Eindex+1)]%*%ihr[,2]*(1-critH)*(1-param_vector["prob_icu"])*param_vector["reporth"]+
+  #       param_vector["gamma"]*out0[,(Eindex+1)]%*%ihr[,2]*(1-critH)*(1-param_vector["prob_icu"])*(1-param_vector["reporth"])*param_vector["reporth_g"]+
+  #       param_vector["gamma"]*out0[,(QEindex+1)]%*%ihr[,2]*(1-critH)*(1-param_vector["prob_icu"])*param_vector["reporth"]+
+  #       param_vector["gamma"]*out0[,(QEindex+1)]%*%ihr[,2]*(1-critH)*(1-param_vector["prob_icu"])*(1-param_vector["reporth"])*param_vector["reporth_g"]+
+  #       param_vector["gamma"]*param_vector["sigmaEV"]*out0[,(EVindex+1)]%*%ihr[,2]*(1-critH)*(1-param_vector["prob_icu_v"])*param_vector["reporth"]+
+  #       param_vector["gamma"]*param_vector["sigmaEVR"]*out0[,(EVRindex+1)]%*%ihr[,2]*(1-critH)*(1-param_vector["prob_icu_vr"])*param_vector["reporth"]+
+  #       param_vector["gamma"]*param_vector["sigmaER"]*out0[,(ERindex+1)]%*%ihr[,2]*(1-critH)*(1-param_vector["prob_icu_r"])*param_vector["reporth"]+
+  #       param_vector["gamma"]*out0[,(Eindex+1)]%*%ihr[,2]*critH*param_vector["reporth_g"]*(1-param_vector["prob_icu"])+
+  #       param_vector["gamma"]*out0[,(QEindex+1)]%*%ihr[,2]*critH*param_vector["reporth_g"]*(1-param_vector["prob_icu"])+
+  #       param_vector["gamma"]*param_vector["sigmaEV"]*out0[,(EVindex+1)]%*%ihr[,2]*critH*param_vector["reporth_g"]*(1-param_vector["prob_icu_v"])+
+  #       param_vector["gamma"]*param_vector["sigmaEVR"]*out0[,(EVRindex+1)]%*%ihr[,2]*critH*param_vector["reporth_g"]*(1-param_vector["prob_icu_vr"])+
+  #       param_vector["gamma"]*param_vector["sigmaER"]*out0[,(ERindex+1)]%*%ihr[,2]*critH*param_vector["reporth_g"]*(1-param_vector["prob_icu_r"])+
+  #       #ICU
+  #       param_vector["gamma"]*out0[,(Eindex+1)]%*%ihr[,2]*param_vector["prob_icu"]*(1-crit)*param_vector["reporth_ICU"]+
+  #       param_vector["gamma"]*out0[,(QEindex+1)]%*%ihr[,2]*param_vector["prob_icu"]*(1-crit)*param_vector["reporth_ICU"]+
+  #       param_vector["gamma"]*out0[,(Eindex+1)]%*%ihr[,2]*param_vector["prob_icu"]*crit*param_vector["reporth_ICU"]*param_vector["reporth_g"]+
+  #       param_vector["gamma"]*out0[,(QEindex+1)]%*%ihr[,2]*param_vector["prob_icu"]*crit*param_vector["reporth_ICU"]*param_vector["reporth_g"]+
+  #       param_vector["gamma"]*param_vector["sigmaEV"]*out0[,(EVindex+1)]%*%ihr[,2]*(1-crit)*param_vector["prob_icu_v"]*param_vector["reporth_ICU"]+
+  #       param_vector["gamma"]*param_vector["sigmaEVR"]*out0[,(EVRindex+1)]%*%ihr[,2]*(1-crit)*param_vector["prob_icu_vr"]*param_vector["reporth_ICU"]+
+  #       param_vector["gamma"]*param_vector["sigmaER"]*out0[,(ERindex+1)]%*%ihr[,2]*(1-crit)*param_vector["prob_icu_r"]*param_vector["reporth_ICU"]+
+  #       param_vector["gamma"]*param_vector["sigmaEV"]*out0[,(EVindex+1)]%*%ihr[,2]*crit*param_vector["prob_icu_v"]*param_vector["reporth_ICU"]*param_vector["reporth_g"]+
+  #       param_vector["gamma"]*param_vector["sigmaEVR"]*out0[,(EVRindex+1)]%*%ihr[,2]*crit*param_vector["prob_icu_vr"]*param_vector["reporth_ICU"]*param_vector["reporth_g"]+
+  #       param_vector["gamma"]*param_vector["sigmaER"]*out0[,(ERindex+1)]%*%ihr[,2]*crit*param_vector["prob_icu_r"]*param_vector["reporth_ICU"]*param_vector["reporth_g"]+
+  #       param_vector["gamma"]*out0[,(Eindex+1)]%*%ihr[,2]*param_vector["prob_icu"]*(1-param_vector["reporth_ICU"])*param_vector["reporth_g"]+
+  #       param_vector["gamma"]*out0[,(QEindex+1)]%*%ihr[,2]*param_vector["prob_icu"]*(1-param_vector["reporth_ICU"])*param_vector["reporth_g"]+
+  #       param_vector["gamma"]*param_vector["sigmaEV"]*out0[,(EVindex+1)]%*%ihr[,2]*param_vector["prob_icu_v"]*(1-param_vector["reporth_ICU"])*param_vector["reporth_g"]+
+  #       param_vector["gamma"]*param_vector["sigmaEVR"]*out0[,(EVRindex+1)]%*%ihr[,2]*param_vector["prob_icu_vr"]*(1-param_vector["reporth_ICU"])*param_vector["reporth_g"]+
+  #       param_vector["gamma"]*param_vector["sigmaER"]*out0[,(ERindex+1)]%*%ihr[,2]*param_vector["prob_icu_r"]*(1-param_vector["reporth_ICU"])*param_vector["reporth_g"]
       
       
-      cases[,i]<-(rowSums(incidence)+rowSums(incidenceh))           # daily incidence cases
-      cum_cases[,i]<-colSums(incidence)+colSums(incidenceh)         # cumulative incidence cases
-      day_infections[,i]<- round(rowSums(param_vector["gamma"]*out0[,(Eindex+1)]+
-                                           param_vector["gamma"]*out0[,(QEindex+1)]+
-                                           param_vector["gamma"]*out0[,(EVindex+1)]+
-                                           param_vector["gamma"]*out0[,(EVRindex+1)]+
-                                           param_vector["gamma"]*out0[,(ERindex+1)]))
+  #     cases[,i]<-(rowSums(incidence)+rowSums(incidenceh))           # daily incidence cases
+  #     cum_cases[,i]<-colSums(incidence)+colSums(incidenceh)         # cumulative incidence cases
+  #     day_infections[,i]<- round(rowSums(param_vector["gamma"]*out0[,(Eindex+1)]+
+  #                                          param_vector["gamma"]*out0[,(QEindex+1)]+
+  #                                          param_vector["gamma"]*out0[,(EVindex+1)]+
+  #                                          param_vector["gamma"]*out0[,(EVRindex+1)]+
+  #                                          param_vector["gamma"]*out0[,(ERindex+1)]))
       
-      # daily infections
-      infections[i] <- round(100*last(cumsum(day_infections[,i]))/sum(popstruc[,2]), 1)  # proportion of the  population that has been infected at the end of the simulation
-      for (w in (ceiling(1/param_vector["nui"])+1):length(times)){
-        Rt_aux[w,i]<-cumsum(sum(param_vector["gamma"]*out0[w,(Eindex+1)]))/cumsum(sum(param_vector["gamma"]*out0[(w-1/param_vector["nui"]),(Eindex+1)]))
-        if(Rt_aux[w,i] >= 7) {Rt_aux[w,i]<-NA}
-      }
-    } 
-    qq <- quantile(infections, c(confidence, 0.5, (1-confidence)),na.rm=T)
-    results$mean_infections<-qq[2]
-    results$min_infections<-qq[1]
-    results$max_infections<-qq[3]
+  #     # daily infections
+  #     infections[i] <- round(100*last(cumsum(day_infections[,i]))/sum(popstruc[,2]), 1)  # proportion of the  population that has been infected at the end of the simulation
+  #     for (w in (ceiling(1/param_vector["nui"])+1):length(times)){
+  #       Rt_aux[w,i]<-cumsum(sum(param_vector["gamma"]*out0[w,(Eindex+1)]))/cumsum(sum(param_vector["gamma"]*out0[(w-1/param_vector["nui"]),(Eindex+1)]))
+  #       if(Rt_aux[w,i] >= 7) {Rt_aux[w,i]<-NA}
+  #     }
+  #   } 
+  #   qq <- quantile(infections, c(confidence, 0.5, (1-confidence)),na.rm=T)
+  #   results$mean_infections<-qq[2]
+  #   results$min_infections<-qq[1]
+  #   results$max_infections<-qq[3]
     
-    for(i in 1:length(out0[,1])){
-      qq <- quantile(cases[i,], c(confidence, 0.5, (1-confidence)),na.rm=T)
-      results$mean_cases[i]<-qq[2]
-      results$min_cases[i]<-qq[1]
-      results$max_cases[i]<-qq[3]
+  #   for(i in 1:length(out0[,1])){
+  #     qq <- quantile(cases[i,], c(confidence, 0.5, (1-confidence)),na.rm=T)
+  #     results$mean_cases[i]<-qq[2]
+  #     results$min_cases[i]<-qq[1]
+  #     results$max_cases[i]<-qq[3]
       
-      qq <- quantile(cum_cases[i,], c(confidence, 0.5, (1-confidence)),na.rm=T)
-      results$mean_cum_cases[i]<-qq[2]
-      results$min_cum_cases[i]<-qq[1]
-      results$max_cum_cases[i]<-qq[3]
+  #     qq <- quantile(cum_cases[i,], c(confidence, 0.5, (1-confidence)),na.rm=T)
+  #     results$mean_cum_cases[i]<-qq[2]
+  #     results$min_cum_cases[i]<-qq[1]
+  #     results$max_cum_cases[i]<-qq[3]
       
-      qq <- quantile(day_infections[i,], c(confidence, 0.5, (1-confidence)),na.rm=T)
-      results$mean_daily_infection[i]<-qq[2]
-      results$min_daily_infection[i]<-qq[1]
-      results$max_daily_infection[i]<-qq[3]
+  #     qq <- quantile(day_infections[i,], c(confidence, 0.5, (1-confidence)),na.rm=T)
+  #     results$mean_daily_infection[i]<-qq[2]
+  #     results$min_daily_infection[i]<-qq[1]
+  #     results$max_daily_infection[i]<-qq[3]
       
-      qq <- quantile(Rt_aux[i,], c(confidence, 0.5, (1-confidence)),na.rm = T)
-      results$mean_Rt[i]<-qq[2]
-      results$min_Rt[i]<-qq[1]
-      results$max_Rt[i]<-qq[3]
+  #     qq <- quantile(Rt_aux[i,], c(confidence, 0.5, (1-confidence)),na.rm = T)
+  #     results$mean_Rt[i]<-qq[2]
+  #     results$min_Rt[i]<-qq[1]
+  #     results$max_Rt[i]<-qq[3]
       
-      for (j in 1:length(out0[1,])){
-        qq <- quantile(aux[i,j,], c(confidence, 0.5, (1-confidence)),na.rm=T)
-        results$mean[i,j]<-qq[2]
-        results$min[i,j]<-qq[1]
-        results$max[i,j]<-qq[3]
-      }
-    }
-  }else{
-    out0 <- ode(y = Y, times = times, method = "euler", hini = 0.05, func = covid, parms = parameters, input=input)
+  #     for (j in 1:length(out0[1,])){
+  #       qq <- quantile(aux[i,j,], c(confidence, 0.5, (1-confidence)),na.rm=T)
+  #       results$mean[i,j]<-qq[2]
+  #       results$min[i,j]<-qq[1]
+  #       results$max[i,j]<-qq[3]
+  #     }
+  #   }
+  # }else{
+  #   out0 <- ode(y = Y, times = times, method = "euler", hini = 0.05, func = covid, parms = parameters, input=input)
     results$mean<-out0
     
     critH<-c()
@@ -2523,7 +2530,7 @@ multi_runs<-function(Y,times,parameters,input,iterations,noise,confidence,fit,fi
     results$mean_cases<-cases1
     results$mean_infections<-infections1
     results$mean_daily_infection<-day_infections1
-  }
+  # }
   return(results)
 }
 

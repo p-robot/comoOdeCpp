@@ -6,8 +6,8 @@ test_that("Walk-through (v19.1.1) of the model code", {
   init(e = environment())
 
   # file_path <- paste0(getwd(), "/data/templates_v16.8/Template_CoMoCOVID-19App_v17_all_interventions.xlsx")
-  # file_path <- paste0(getwd(), "/data/templates_v19.1/Template_CoMoCOVID-19App_v19_all_interventions.xlsx")
-  file_path <- paste0(getwd(), "/data/templates_v19.1.1/Template_CoMoCOVID-19App_v19.xlsx")
+  # file_path <- paste0(getwd(), "/data/templates_v19.1.1/Template_CoMoCOVID-19App_v19.xlsx")
+  file_path <- paste0(getwd(), "/data/templates_v19.1.1/Template_CoMoCOVID-19App_v19_all_interventions.xlsx")
 
   if (!exists("inputs", mode = "function")) {
     source(paste0(getwd(), CORE_FILE), local = environment())
@@ -77,9 +77,17 @@ test_that("Walk-through (v19.1.1) of the model code", {
 
         expect_equal(output_message, "covidOdeCpp: splinefuns updated")
 
+        processed_cpp_results <- multi_runs_pp_only(
+              out0 = out_cpp, times = times, parameters = param_vector, input = ss
+            )
+
+        processed_cpp_results <- process_ode_outcome(
+              out = processed_cpp_results, intv_vector = ss, param_used = param_vector
+            )
+
         # processed_cpp_results <- process_ode_outcome(out_cpp, ss, param_vector)
-        # print("processed_cpp_results$total_reported_deaths_end:")
-        # print(processed_cpp_results$total_reported_deaths_end)
+        print("total_reported_deaths_end (Cpp):")
+        print(processed_cpp_results$total_reported_deaths_end)
 
       }
 
@@ -102,19 +110,27 @@ test_that("Walk-through (v19.1.1) of the model code", {
         # print("R version time:")
         # print(elapsed_time)
 
+        processed_r_results <- multi_runs_pp_only(
+              out0 = out_r, times = times, parameters = param_vector, input = ss
+            )
+
+        processed_r_results <- process_ode_outcome(
+              out = processed_r_results, intv_vector = ss, param_used = param_vector
+            )
+
         # processed_r_results <- process_ode_outcome(out_r, ss, param_vector)
-        # print("processed_r_results$total_reported_deaths_end:")
-        # print(processed_r_results$total_reported_deaths_end)
+        print("total_reported_deaths_end (R):")
+        print(processed_r_results$total_reported_deaths_end)
 
 
       }
 
       if (RUN_R && RUN_CPP) {
-        # match_processed_outputs(
-        #     output_a = processed_cpp_results,
-        #     output_b = processed_r_results,
-        #     tlr = 0.0001
-        # )
+        match_processed_outputs(
+            output_a = processed_cpp_results,
+            output_b = processed_r_results,
+            tlr = 0.0001
+        )
 
         # # sss = 1
         # # write.csv(out_cpp, paste0("out_cpp_",sss,"_",parameters["p"],".csv"),row.names = FALSE)
