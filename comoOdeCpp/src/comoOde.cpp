@@ -427,16 +427,16 @@ List covidOdeCpp(
 //     ask_input=false;
 //   }
 // }
+    static double date_range_variant_start = 0.0;
+    date_range_variant_start = parameters["date_range_variant_start"];
 
-if( parameters["new_variant_p_multiplier"] ){
-    if( t > parameters["date_range_variant_start"] ){
+    if( t > date_range_variant_start ){
       
         static double new_variant_p_multiplier = 0.0;
         new_variant_p_multiplier = parameters["new_variant_p_multiplier"];
 
         p = p*new_variant_p_multiplier;
     }
-}
 
 // duration_b += high_resolution_clock::now()-start_b;
 // auto start_c = high_resolution_clock::now();
