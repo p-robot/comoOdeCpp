@@ -1032,6 +1032,7 @@ List covidOdeCpp(
                         - omega*QVR
                         + ageing*QVR
                         - mort_col%QVR 
+                        - (1.0/quarantine_days)*QVR 
                         ;
 
       arma::vec dQEVRdt = quarantine_rate*EVR
