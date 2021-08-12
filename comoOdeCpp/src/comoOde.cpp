@@ -439,7 +439,7 @@ List covidOdeCpp(
     }
 
     static double date_range_variant2_start = 0.0;
-    date_range_variant_start = parameters["date_range_variant2_start"];
+    date_range_variant2_start = parameters["date_range_variant2_start"];
 
     if( t > date_range_variant2_start ){
       
